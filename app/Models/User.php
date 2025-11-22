@@ -22,5 +22,9 @@ class User extends Authenticatable
         'aktivitas',
     ];
 
+    public function kebutuhanHarian()
+    {
+        return $this->hasOne(KebutuhanHarian::class);
+    }
     
 }
