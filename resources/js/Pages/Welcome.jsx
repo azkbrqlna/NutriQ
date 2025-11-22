@@ -7,8 +7,10 @@ import {
     Sparkles,
     History,
     ChevronRight,
+    Moon,
+    Sun,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Reveal from "@/Components/Reveal";
 import { Floating } from "@/Components/Floating";
@@ -16,7 +18,30 @@ import { Floating } from "@/Components/Floating";
 export default function Landing() {
     const carouselRef = useRef(null);
 
-    // AUTO SCROLL TESTIMONIALS
+    /* ======================================
+     DARK MODE TOGGLE
+    ====================================== */
+    const [darkMode, setDarkMode] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("theme");
+        if (saved === "dark") {
+            setDarkMode(true);
+            document.documentElement.classList.add("dark");
+        }
+    }, []);
+
+    const toggleDark = () => {
+        const newMode = !darkMode;
+        setDarkMode(newMode);
+        localStorage.setItem("theme", newMode ? "dark" : "light");
+        if (newMode) document.documentElement.classList.add("dark");
+        else document.documentElement.classList.remove("dark");
+    };
+
+    /* ======================================
+     AUTO SCROLL TESTIMONIALS 
+    ====================================== */
     useEffect(() => {
         const slider = carouselRef.current;
         if (!slider) return;
@@ -32,16 +57,65 @@ export default function Landing() {
         return () => clearInterval(scrollInterval);
     }, []);
 
-    // PARALLAX HERO
+    /* ======================================
+     PARALLAX
+    ====================================== */
     const { scrollYProgress } = useScroll();
     const yHero = useTransform(scrollYProgress, [0, 1], [0, -120]);
 
-    // ==== SMOOTH SCROLL TANPA HASH ====
+    /* ======================================
+     SMOOTH SCROLL NON-HASH
+    ====================================== */
     const scrollTo = (id) => {
         const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth" });
-        }
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+
+    /* ======================================
+     PARTICLES
+    ====================================== */
+    const Particles = () => {
+        const total = 40;
+
+        return (
+            <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+                {Array.from({ length: total }).map((_, i) => {
+                    const size = Math.random() * 12 + 8; // 8–20px BIAR KELIATAN
+                    const startX = Math.random() * window.innerWidth;
+                    const startY = Math.random() * window.innerHeight;
+
+                    return (
+                        <motion.div
+                            key={i}
+                            initial={{
+                                x: startX,
+                                y: startY,
+                                opacity: 0.6, // LEBIH KENTAL
+                            }}
+                            animate={{
+                                y: -150,
+                                opacity: [0.6, 0.9, 0.4],
+                            }}
+                            transition={{
+                                duration: Math.random() * 8 + 10,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="
+                            absolute rounded-full 
+                            bg-greenmedium dark:bg-white 
+                            blur-[10px]    // GLOW
+                            shadow-xl shadow-greenmedium/40 dark:shadow-white/30
+                        "
+                            style={{
+                                width: size,
+                                height: size,
+                            }}
+                        />
+                    );
+                })}
+            </div>
+        );
     };
 
     const testimonials = [
@@ -68,15 +142,16 @@ export default function Landing() {
     ];
 
     return (
-        <div className="min-h-screen bg-cream text-gray-800">
+        <div className="min-h-screen bg-cream dark:bg-[#0f1115] text-gray-800 dark:text-gray-200 relative">
             {/* ============ NAVBAR ============ */}
+
             <motion.nav
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="fixed top-0 left-0 w-full z-50"
             >
-                <div className="backdrop-blur-xl bg-white/40 border-b border-white/20 shadow-md">
+                <div className="backdrop-blur-xl bg-white/40 dark:bg-black/30 border-b border-white/20 dark:border-white/10 shadow-md">
                     <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                         {/* Logo */}
                         <div className="flex items-center gap-2">
@@ -87,59 +162,48 @@ export default function Landing() {
                         </div>
 
                         {/* Links */}
-                        <div className="hidden md:flex gap-8 text-greendeep font-medium">
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    scrollTo("features");
-                                    history.replaceState(
-                                        null,
-                                        "",
-                                        window.location.pathname
-                                    );
-                                }}
-                                className="hover:text-greenmedium transition"
-                            >
-                                Fitur
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    scrollTo("how");
-                                    history.replaceState(
-                                        null,
-                                        "",
-                                        window.location.pathname
-                                    );
-                                }}
-                                className="hover:text-greenmedium transition"
-                            >
-                                Cara Kerja
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    scrollTo("testimonials");
-                                    history.replaceState(
-                                        null,
-                                        "",
-                                        window.location.pathname
-                                    );
-                                }}
-                                className="hover:text-greenmedium transition"
-                            >
-                                Testimoni
-                            </button>
+                        <div className="hidden md:flex gap-8 font-medium">
+                            {[
+                                { id: "features", label: "Fitur" },
+                                { id: "how", label: "Cara Kerja" },
+                                { id: "testimonials", label: "Testimoni" },
+                            ].map((item, i) => (
+                                <button
+                                    key={i}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        scrollTo(item.id);
+                                        history.replaceState(
+                                            null,
+                                            "",
+                                            window.location.pathname
+                                        );
+                                    }}
+                                    className="hover:text-greenmedium dark:hover:text-greenlight transition"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
                         </div>
 
-                        {/* Buttons */}
-                        <div className="flex gap-3">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3">
+                            {/* DARKMODE BUTTON */}
+                            <button
+                                onClick={toggleDark}
+                                className="p-2 rounded-full bg-greenlight dark:bg-black/40 shadow hover:scale-105 transition"
+                            >
+                                {darkMode ? (
+                                    <Sun className="w-5 h-5 text-yellow-300" />
+                                ) : (
+                                    <Moon className="w-5 h-5 text-gray-700" />
+                                )}
+                            </button>
+
                             <Link href="/login">
                                 <Button
                                     variant="outline"
-                                    className="border-greendeep text-greendeep"
+                                    className="border-greendeep dark:border-white text-greendeep dark:text-white"
                                 >
                                     Login
                                 </Button>
@@ -157,19 +221,19 @@ export default function Landing() {
             {/* ============ HERO ============ */}
             <motion.section
                 style={{ y: yHero }}
-                className="pt-40 pb-28 px-6 bg-gradient-to-b from-cream to-greenlight/40"
+                className="pt-40 pb-28 px-6 bg-gradient-to-b from-cream to-greenlight/40 dark:from-[#0f1115] dark:to-[#1a1d21]"
             >
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-14">
                     {/* Hero Text */}
                     <div className="flex-1 space-y-3">
                         <Reveal delay={0.05}>
-                            <div className="px-4 py-1 bg-white/70 rounded-full w-fit border border-greenmild text-sm text-greendeep">
+                            <div className="px-4 py-1 bg-white/70 dark:bg-white/10 rounded-full w-fit border border-greenmild text-sm text-greendeep dark:text-gray-200">
                                 Website AI – Nutrisi Makanan
                             </div>
                         </Reveal>
 
                         <Reveal delay={0.15}>
-                            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-greendeep">
+                            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-greendeep dark:text-white">
                                 Analisa Nutrisi Makanan
                                 <span className="text-greenmedium block">
                                     Menggunakan Kecerdasan Buatan
@@ -178,7 +242,7 @@ export default function Landing() {
                         </Reveal>
 
                         <Reveal delay={0.25}>
-                            <p className="text-gray-700 text-lg max-w-lg">
+                            <p className="text-gray-700 dark:text-gray-300 text-lg max-w-lg">
                                 NutriQ mendeteksi makanan dari foto dan
                                 menampilkan informasi nutrisi lengkap dalam
                                 hitungan detik.
@@ -198,7 +262,7 @@ export default function Landing() {
                     {/* Hero Image */}
                     <div className="flex-1 flex justify-center">
                         <Floating intensity={20} speed={7}>
-                            <div className="bg-white shadow-xl rounded-3xl p-5 border border-greenlight">
+                            <div className="bg-white dark:bg-black border dark:border-white/20 shadow-xl rounded-3xl p-5">
                                 <img
                                     src="https://images.unsplash.com/photo-1504674900247-0877df9cc836"
                                     className="rounded-2xl w-[430px] object-cover shadow-lg"
@@ -209,14 +273,17 @@ export default function Landing() {
                 </div>
             </motion.section>
 
-            {/* ============ FEATURES ============ */}
-            <section id="features" className="py-28 bg-greenlight -mt-24">
+            {/* FEATURES */}
+            <section
+                id="features"
+                className="py-28 bg-greenlight dark:bg-[#14171b] -mt-24"
+            >
                 <div className="max-w-7xl mx-auto px-6 text-center">
                     <Reveal>
-                        <h2 className="text-3xl font-bold text-greendeep">
+                        <h2 className="text-3xl font-bold text-greendeep dark:text-white">
                             Fitur Unggulan
                         </h2>
-                        <p className="text-gray-700 mt-2 max-w-xl mx-auto">
+                        <p className="text-gray-700 dark:text-gray-300 mt-2 max-w-xl mx-auto">
                             Fitur modern untuk mempermudah hidup sehat.
                         </p>
                     </Reveal>
@@ -258,14 +325,17 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* ============ HOW IT WORKS ============ */}
-            <section id="how" className="py-28 bg-greenmild/40">
+            {/* HOW */}
+            <section
+                id="how"
+                className="py-28 bg-greenmild/40 dark:bg-[#101215]"
+            >
                 <div className="max-w-7xl mx-auto px-6 text-center">
                     <Reveal>
-                        <h2 className="text-3xl font-bold text-greendeep">
+                        <h2 className="text-3xl font-bold text-greendeep dark:text-white">
                             Cara Kerja
                         </h2>
-                        <p className="text-gray-700 mt-2 max-w-xl mx-auto">
+                        <p className="text-gray-700 dark:text-gray-300 mt-2 max-w-xl mx-auto">
                             Tiga langkah sederhana untuk mengetahui nutrisi.
                         </p>
                     </Reveal>
@@ -296,10 +366,10 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* ============ TESTIMONIALS ============ */}
+            {/* TESTIMONIALS */}
             <section
                 id="testimonials"
-                className="py-28 bg-greenmedium text-white"
+                className="py-28 bg-greenmedium dark:bg-[#0f3c32] text-white"
             >
                 <Reveal>
                     <h2 className="text-3xl font-bold text-center">
@@ -328,8 +398,8 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* ============ CTA ============ */}
-            <section className="py-28 bg-greendeep text-white text-center">
+            {/* CTA */}
+            <section className="py-28 bg-greendeep dark:bg-black text-white text-center">
                 <Reveal>
                     <h2 className="text-3xl font-bold">
                         Mulai Hidup Sehat Hari Ini
@@ -338,15 +408,15 @@ export default function Landing() {
                         Gratis digunakan tanpa batas. Yuk coba!
                     </p>
                     <Link href="/app">
-                        <Button className="bg-white text-greendeep hover:bg-gray-200 font-medium px-6 py-5 text-lg rounded-xl">
+                        <Button className="bg-white text-greendeep hover:bg-gray-200 dark:bg-greenlight dark:text-black font-medium px-6 py-5 text-lg rounded-xl">
                             Mulai Sekarang
                         </Button>
                     </Link>
                 </Reveal>
             </section>
 
-            {/* ============ FOOTER ============ */}
-            <footer className="bg-greenmedium py-10 text-white">
+            {/* FOOTER */}
+            <footer className="bg-greenmedium dark:bg-[#0c2d26] py-10 text-white">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between">
                     <div>
                         <p className="font-bold text-lg">NutriQ</p>
@@ -356,51 +426,27 @@ export default function Landing() {
                     </div>
 
                     <div className="flex gap-6 text-sm mt-4 md:mt-0">
-                        <button
-                            // onClick={() => scrollTo("features")}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollTo("features");
-                                history.replaceState(
-                                    null,
-                                    "",
-                                    window.location.pathname
-                                );
-                            }}
-                            className="hover:text-white"
-                        >
-                            Fitur
-                        </button>
-                        <button
-                            // onClick={() => scrollTo("how")}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollTo("how");
-                                history.replaceState(
-                                    null,
-                                    "",
-                                    window.location.pathname
-                                );
-                            }}
-                            className="hover:text-white"
-                        >
-                            Cara Kerja
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollTo("testimonials");
-                                history.replaceState(
-                                    null,
-                                    "",
-                                    window.location.pathname
-                                );
-                            }}
-                            // onClick={() => scrollTo("testimonials")}
-                            className="hover:text-white"
-                        >
-                            Testimoni
-                        </button>
+                        {[
+                            { id: "features", label: "Fitur" },
+                            { id: "how", label: "Cara Kerja" },
+                            { id: "testimonials", label: "Testimoni" },
+                        ].map((item, i) => (
+                            <button
+                                key={i}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    scrollTo(item.id);
+                                    history.replaceState(
+                                        null,
+                                        "",
+                                        window.location.pathname
+                                    );
+                                }}
+                                className="hover:text-white"
+                            >
+                                {item.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </footer>
@@ -412,22 +458,30 @@ export default function Landing() {
 
 function FeatureCard({ icon, title, desc }) {
     return (
-        <div className="p-8 rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all">
+        <div className="p-8 rounded-3xl bg-white dark:bg-black border dark:border-white/20 shadow-md hover:shadow-xl transition-all">
             {icon}
-            <h3 className="font-semibold text-xl text-greendeep">{title}</h3>
-            <p className="text-gray-700 mt-2 text-sm">{desc}</p>
+            <h3 className="font-semibold text-xl text-greendeep dark:text-white">
+                {title}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 mt-2 text-sm">
+                {desc}
+            </p>
         </div>
     );
 }
 
 function StepCard({ number, title, desc }) {
     return (
-        <div className="p-8 rounded-xl bg-white shadow-sm border border-greenlight">
+        <div className="p-8 rounded-xl bg-white dark:bg-black shadow-sm border border-greenlight dark:border-white/10">
             <div className="text-4xl font-extrabold text-greenmedium">
                 {number}
             </div>
-            <p className="font-semibold mt-3 text-greendeep">{title}</p>
-            <p className="text-gray-700 mt-2 text-sm">{desc}</p>
+            <p className="font-semibold mt-3 text-greendeep dark:text-white">
+                {title}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300 mt-2 text-sm">
+                {desc}
+            </p>
         </div>
     );
 }
@@ -437,7 +491,7 @@ function TestimonialCard({ name, text, img }) {
         <div
             className="
                 min-w-[280px]
-                bg-white/20
+                bg-white/20 dark:bg-white/10
                 backdrop-blur-xl
                 border border-white/25
                 rounded-xl
