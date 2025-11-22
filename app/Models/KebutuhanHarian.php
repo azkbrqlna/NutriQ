@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KebutuhanHarian extends Model
 {
     protected $fillable = [
+        'user_id',
         'kalori',
         'protein',
         'lemak',
@@ -15,4 +16,9 @@ class KebutuhanHarian extends Model
         'natrium',
         'gula_tambahan',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
