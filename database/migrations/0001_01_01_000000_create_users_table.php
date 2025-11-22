@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('tinggi')->nullable();
             $table->integer('berat')->nullable();
             $table->string('aktivitas')->nullable();
+            $table->foreignId('kebutuhan_harian_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
 
