@@ -1,193 +1,78 @@
-import React from "react";
-import { useForm } from "@inertiajs/react";
+import React, { useState } from "react";
+import { router, useForm } from "@inertiajs/react";
 
 export default function Register() {
+    const [isNotFilled, setIsnotFilled] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
-        name: "",
         email: "",
         password: "",
-        umur: "",
-        jenis_kelamin: "",
-        tinggi: "",
-        berat: "",
-        aktivitas: "",
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        post("/register"); // route name yg kamu pakai di web.php
+    const handleRegister = () => {
+        if (!data.email && !data.password) {
+            setIsNotFilled(true);
+            return;
+        }
+        post("/login");
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    Register
-                </h2>
-
-                <form onSubmit={submit} className="space-y-4">
-                    {/* Nama */}
-                    <div>
-                        <label className="block font-medium">Nama</label>
+        <div className="h-screen flex flex-col  justify-center items-center gap-[2rem]">
+            <div className="logo">
+                <h1 className="font-bold text-4xl">NutriQ</h1>
+            </div>
+            <div className="card max-w-xs w-full p-[1.5rem] rounded-md fill-secondary shadow-lg">
+                <form action={handleRegister} className="flex flex-col">
+                    <div className="flex flex-col gap-[0.5rem] ">
+                        <label htmlFor="">Nama</label>
                         <input
                             type="text"
-                            className="w-full border rounded p-2"
-                            value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
+                            onChange={(e) => setData("password", e.target)}
+                            className="fill-primary outline-none rounded-md"
                         />
-                        {errors.name && (
-                            <p className="text-red-600 text-sm">
-                                {errors.name}
-                            </p>
-                        )}
                     </div>
 
-                    {/* Email */}
-                    <div>
-                        <label className="block font-medium">Email</label>
+                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
+                        <label htmlFor="">Email</label>
                         <input
-                            type="email"
-                            className="w-full border rounded p-2"
-                            value={data.email}
-                            onChange={(e) => setData("email", e.target.value)}
+                            type="text"
+                            onChange={(e) => setData("email", e.target)}
+                            className="fill-primary outline-none rounded-md"
                         />
-                        {errors.email && (
-                            <p className="text-red-600 text-sm">
-                                {errors.email}
-                            </p>
-                        )}
                     </div>
 
-                    {/* Password */}
-                    <div>
-                        <label className="block font-medium">Password</label>
+                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
+                        <label htmlFor="">Password</label>
                         <input
-                            type="password"
-                            className="w-full border rounded p-2"
-                            value={data.password}
-                            onChange={(e) =>
-                                setData("password", e.target.value)
-                            }
+                            type="text"
+                            onChange={(e) => setData("password", e.target)}
+                            className="fill-primary outline-none rounded-md"
                         />
-                        {errors.password && (
-                            <p className="text-red-600 text-sm">
-                                {errors.password}
-                            </p>
-                        )}
                     </div>
 
-                    {/* Umur */}
-                    <div>
-                        <label className="block font-medium">Umur</label>
-                        <input
-                            type="number"
-                            className="w-full border rounded p-2"
-                            value={data.umur}
-                            onChange={(e) => setData("umur", e.target.value)}
-                        />
-                        {errors.umur && (
-                            <p className="text-red-600 text-sm">
-                                {errors.umur}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Jenis Kelamin */}
-                    <div>
-                        <label className="block font-medium">
-                            Jenis Kelamin
-                        </label>
-                        <select
-                            className="w-full border rounded p-2"
-                            value={data.jenis_kelamin}
-                            onChange={(e) =>
-                                setData("jenis_kelamin", e.target.value)
-                            }
-                        >
-                            <option value="">Pilih</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                        {errors.jenis_kelamin && (
-                            <p className="text-red-600 text-sm">
-                                {errors.jenis_kelamin}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Tinggi */}
-                    <div>
-                        <label className="block font-medium">
-                            Tinggi Badan (cm)
-                        </label>
-                        <input
-                            type="number"
-                            className="w-full border rounded p-2"
-                            value={data.tinggi}
-                            onChange={(e) => setData("tinggi", e.target.value)}
-                        />
-                        {errors.tinggi && (
-                            <p className="text-red-600 text-sm">
-                                {errors.tinggi}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Berat */}
-                    <div>
-                        <label className="block font-medium">
-                            Berat Badan (kg)
-                        </label>
-                        <input
-                            type="number"
-                            className="w-full border rounded p-2"
-                            value={data.berat}
-                            onChange={(e) => setData("berat", e.target.value)}
-                        />
-                        {errors.berat && (
-                            <p className="text-red-600 text-sm">
-                                {errors.berat}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Aktivitas */}
-                    <div>
-                        <label className="block font-medium">
-                            Aktivitas Harian
-                        </label>
-                        <select
-                            className="w-full border rounded p-2"
-                            value={data.aktivitas}
-                            onChange={(e) =>
-                                setData("aktivitas", e.target.value)
-                            }
-                        >
-                            <option value="">Pilih Aktivitas</option>
-                            <option value="ringan">
-                                Ringan (jarang olahraga)
-                            </option>
-                            <option value="sedang">
-                                Sedang (3x olahraga/minggu)
-                            </option>
-                            <option value="berat">Berat (latihan rutin)</option>
-                        </select>
-                        {errors.aktivitas && (
-                            <p className="text-red-600 text-sm">
-                                {errors.aktivitas}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                        disabled={processing}
+                        className="mt-[2rem] fill-quartenary text-white p-[0.5rem] rounded-md font-semibold"
                     >
-                        {processing ? "Processing..." : "Register"}
+                        Register
                     </button>
                 </form>
+
+                <p className="text-center mt-[1rem]">
+                    Sudah punya akun?{" "}
+                    <span
+                        className="text-tertiary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
+                        onClick={() => router.visit("/login")}
+                    >
+                        Login
+                    </span>
+                </p>
+
+                {isNotFilled && (
+                    <div>
+                        <p>Harap isi semua field!</p>
+                    </div>
+                )}
             </div>
         </div>
     );
