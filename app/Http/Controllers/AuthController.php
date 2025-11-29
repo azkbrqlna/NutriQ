@@ -7,6 +7,7 @@ use App\Models\KebutuhanHarian;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -16,40 +17,26 @@ class AuthController extends Controller
         return Inertia::render('Auth/Register');
     }
 
-    public function register(Request $request, GeminiService $gemini)
+    public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'            => 'required',
-            'email'           => 'required|email|unique:users',
-            'password'        => 'required|min:6',
-            'umur'            => 'nullable|integer',
-            'jenis_kelamin'   => 'nullable|string',
-            'tinggi'          => 'nullable|integer',
-            'berat'           => 'nullable|integer',
-            'aktivitas'       => 'nullable|string',
+            'name'     => 'required',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
         ]);
 
-        $user = User::create($validated);
-
-        $hasil = $gemini->hitungKebutuhan($user);
-
-        if ($hasil) {
-            KebutuhanHarian::create([
-                'user_id'       => $user->id,
-                'kalori'        => $hasil['kalori'] ?? 0,
-                'protein'       => $hasil['protein'] ?? 0,
-                'lemak'         => $hasil['lemak'] ?? 0,
-                'karbohidrat'   => $hasil['karbohidrat'] ?? 0,
-                'serat'         => $hasil['serat'] ?? 0,
-                'natrium'       => $hasil['natrium'] ?? 0,
-                'gula_tambahan' => $hasil['gula_tambahan'] ?? 0,
-            ]);
-        }
+        $user = User::create([
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
+        return redirect()->route('personalisasi')
+            ->with('success', 'Registrasi berhasil! Lengkapi data personal Anda.');
     }
+
 
     public function loginForm()
     {
