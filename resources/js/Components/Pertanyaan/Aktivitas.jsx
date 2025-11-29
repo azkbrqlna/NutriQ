@@ -2,11 +2,11 @@ import { Mars } from "lucide-react";
 import Title from "../Title";
 import SelectBox from "../SelectBox";
 
-export default function ActivityQuestion({ setData }) {
+export default function Aktivitas({ setData }) {
     return (
         <div className="flex flex-col items-center justify-center ">
             <span className="text-2xl opacity-80">Pertanyaan 4/4</span>
-            <Title text={"Apa tingkat aktivitas Anda?"} />
+            <Title text={"Apa tingkat aktivitas Anda?"} className="text-center" />
             <div className="flex flex-col gap-[2rem] mt-[2rem]">
                 <div className="flex items-center gap-[3rem]">
                     <SelectBox

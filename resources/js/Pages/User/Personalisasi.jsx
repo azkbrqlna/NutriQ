@@ -2,10 +2,10 @@ import { useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
 
-import AgeQuestion from "@/Components/Pertanyaan/AgeQuestion";
-import WeightHeightQuestion from "@/Components/Pertanyaan/WeightHeightQuestion";
-import ActivityQuestion from "@/Components/Pertanyaan/ActivityQuestion";
-import GenderQuestion from "@/Components/Pertanyaan/GenderQuestion";
+import AgeQuestion from "@/Components/Pertanyaan/Umur";
+import WeightHeightQuestion from "@/Components/Pertanyaan/TinggiBerat";
+import ActivityQuestion from "@/Components/Pertanyaan/Aktivitas";
+import GenderQuestion from "@/Components/Pertanyaan/JenisKelamin";
 import { useForm } from "@inertiajs/react";
 import Title from "@/Components/Title";
 
@@ -20,11 +20,6 @@ export default function Personalisasi() {
     const [questionNumber, setQuestionNumber] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const CurrentQuestion = contents[questionNumber];
-    // const [jenis_kelamin, setJenisKelamin] = useState("");
-    // const [berat, setBerat] = useState(0);
-    // const [tinggi, setTinggi] = useState(0);
-    // const [aktivitas, setAktivitas] = useState("");
-    // const [umur, setUmur] = useState(0);
 
     const { data, setData, post, processing, errors } = useForm({
         umur: "",
@@ -69,7 +64,9 @@ export default function Personalisasi() {
     return (
         <div>
             <div className="h-screen flex flex-col justify-center items-center z-0">
+                {/* pertanyaan dinamis */}
                 <CurrentQuestion setData={setData} data={data} />
+
                 <div className="max-w-6xl w-full fixed flex justify-between bottom-12 md:px-0 px-[2rem]">
                     <button
                         className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
@@ -94,7 +91,7 @@ export default function Personalisasi() {
             {showModal && (
                 <div className="w-full h-full fixed top-0 right-0 black-0 left-0 z-50 flex items-center justify-center bg-black/80">
                     <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl md:p-[1.5rem] py-[1.5rem] px-[1rem] fill-secondary">
-                        <Title text={"Siap memulai perjalanan sehat Anda?"} />
+                        <Title text={"Siap memulai perjalanan sehat Anda?"} className="text-center"/>
                         <p className="text-center opacity-80 text-xl">
                             Anda masih bisa mengubah data-data ini kapan saja
                             melalui menu Profil.
