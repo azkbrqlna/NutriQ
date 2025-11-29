@@ -4,6 +4,7 @@ import { router, useForm } from "@inertiajs/react";
 export default function Register() {
     const [isNotFilled, setIsnotFilled] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
+        name: "",
         email: "",
         password: "",
     });
@@ -13,7 +14,7 @@ export default function Register() {
             setIsNotFilled(true);
             return;
         }
-        post("/login");
+        post("/register");
     };
 
     return (
@@ -21,13 +22,13 @@ export default function Register() {
             <div className="logo">
                 <h1 className="font-bold text-4xl">NutriQ</h1>
             </div>
-            <div className="card max-w-xs w-full p-[1.5rem] rounded-md fill-secondary shadow-lg">
+            <div className="card max-w-[350px] w-full p-[1.5rem] rounded-xl fill-secondary shadow-lg">
                 <form action={handleRegister} className="flex flex-col">
                     <div className="flex flex-col gap-[0.5rem] ">
                         <label htmlFor="">Nama</label>
                         <input
                             type="text"
-                            onChange={(e) => setData("password", e.target)}
+                            onChange={(e) => setData("name", e.target.value)}
                             className="fill-primary outline-none rounded-md"
                         />
                     </div>
@@ -36,8 +37,8 @@ export default function Register() {
                         <label htmlFor="">Email</label>
                         <input
                             type="text"
-                            onChange={(e) => setData("email", e.target)}
-                            className="fill-primary outline-none rounded-md"
+                            onChange={(e) => setData("email", e.target.value)}
+                            className="fill-primary outline-none rounded-lg"
                         />
                     </div>
 
@@ -45,14 +46,14 @@ export default function Register() {
                         <label htmlFor="">Password</label>
                         <input
                             type="text"
-                            onChange={(e) => setData("password", e.target)}
-                            className="fill-primary outline-none rounded-md"
+                            onChange={(e) => setData("password", e.target.value)}
+                            className="fill-primary outline-none rounded-lg"
                         />
                     </div>
 
                     <button
                         type="submit"
-                        className="mt-[2rem] fill-quartenary text-white p-[0.5rem] rounded-md font-semibold"
+                        className="mt-[2rem] fill-quartenary text-white p-[0.5rem] rounded-lg font-semibold"
                     >
                         Register
                     </button>
@@ -61,7 +62,7 @@ export default function Register() {
                 <p className="text-center mt-[1rem]">
                     Sudah punya akun?{" "}
                     <span
-                        className="text-tertiary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
+                        className="text-quartenary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
                         onClick={() => router.visit("/login")}
                     >
                         Login
