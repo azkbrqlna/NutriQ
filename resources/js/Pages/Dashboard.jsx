@@ -1,11 +1,22 @@
 import React from "react";
-import { Link, useForm } from "@inertiajs/react";
 import AppLayout from "@/Components/AppLayout";
 import Title from "@/Components/Title";
 import CircularProgress from "@/Components/CircularProgress";
-import { Beef, Candy, Wheat, Droplet, Flame, Leaf, Calendar } from "lucide-react";
+import {
+    Beef,
+    Candy,
+    Wheat,
+    Droplet,
+    Flame,
+    Leaf,
+    Calendar,
+} from "lucide-react";
+import { usePage } from "@inertiajs/react";
 
 export default function Dashboard() {
+    const { kebutuhan } = usePage().props;
+    console.log(kebutuhan);
+
     return (
         <AppLayout>
             <div className=" max-w-5xl w-full flex justify-between items-center ">
@@ -19,7 +30,7 @@ export default function Dashboard() {
             <div className="mt-[2rem] max-w-5xl w-full">
                 <h2 className="md:text-3xl text-2xl font-bold">Makronutrisi</h2>
                 <div className="container flex md:gap-[3rem] gap-[1.5rem] flex-wrap justify-between items-center mt-[1.5rem]">
-                    <div className="md:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
+                    <div className="lg:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
                         <div className="">
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -40,7 +51,7 @@ export default function Dashboard() {
                             className="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"
                         />
                     </div>
-                    <div className="md:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
+                    <div className="lg:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
                         <div className="">
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -61,7 +72,7 @@ export default function Dashboard() {
                             className="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"
                         />
                     </div>
-                    <div className="md:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
+                    <div className="lg:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
                         <div className="">
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -82,7 +93,7 @@ export default function Dashboard() {
                             className="w-[100px] h-[100px] md:w-[120px] md:h-[120px]"
                         />
                     </div>
-                    <div className="md:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
+                    <div className="lg:w-[47%] w-full rounded-xl bg-secondary md:p-[2rem] p-[1.5rem] flex items-center justify-between">
                         <div className="">
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -111,8 +122,8 @@ export default function Dashboard() {
                 <h2 className="md:text-3xl text-2xl font-bold">
                     Nutrisi tambahan
                 </h2>
-                <div className="container flex md:gap-0 gap-[1.5rem] flex-wrap justify-between items-center mt-[1.5rem]">
-                    <div className="card md:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
+                <div className="container flex gap-[1.5rem] flex-wrap justify-between items-center mt-[1.5rem]">
+                    <div className="card lg:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -133,7 +144,7 @@ export default function Dashboard() {
                             className="w-[100px] h-[100px] md:w-[100px] md:h-[100px]"
                         />
                     </div>
-                    <div className="card md:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
+                    <div className="card lg:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
@@ -154,7 +165,7 @@ export default function Dashboard() {
                             className="w-[100px] h-[100px] md:w-[100px] md:h-[100px]"
                         />
                     </div>
-                    <div className="card md:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
+                    <div className="card lg:w-[30%] w-full rounded-xl bg-secondary p-[1.5rem] flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-[0.8rem]">
                                 <div className="bg-tertiary rounded-xl p-[0.6rem]">
