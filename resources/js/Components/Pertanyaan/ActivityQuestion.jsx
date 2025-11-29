@@ -1,8 +1,8 @@
 import { Mars } from "lucide-react";
-import Title from "./Title";
-import SelectBox from "./SelectBox";
+import Title from "../Title";
+import SelectBox from "../SelectBox";
 
-export default function ActivityQuestion({ setActivity }) {
+export default function ActivityQuestion({ setData }) {
     return (
         <div className="flex flex-col items-center justify-center ">
             <span className="text-2xl opacity-80">Pertanyaan 4/4</span>
@@ -12,17 +12,17 @@ export default function ActivityQuestion({ setActivity }) {
                     <SelectBox
                         label={"Sangat rendah"}
                         icon={Mars}
-                        onClick={setActivity("Sangat rendah")}
+                        onClick={() => setData("aktivitas", "Sangat rendah")}
                     />
                     <SelectBox
                         label={"Ringan"}
                         icon={Mars}
-                        onClick={setActivity("Ringan")}
+                        onClick={() => setData("aktivitas", "Ringan")}
                     />
                     <SelectBox
                         label={"Sedang"}
                         icon={Mars}
-                        onClick={setActivity("Sedang")}
+                        onClick={() => setData("aktivitas", "Sedang")}
                     />
                 </div>
 
@@ -30,12 +30,12 @@ export default function ActivityQuestion({ setActivity }) {
                     <SelectBox
                         label={"Berat"}
                         icon={Mars}
-                        onClick={setActivity("Berat")}
+                        onClick={() => setData("aktivitas", "Berat")}
                     />
                     <SelectBox
                         label={"Ekstra berat"}
                         icon={Mars}
-                        onClick={setActivity("Ekstra berat")}
+                        onClick={() => setData("aktivitas", "Ekstra berat")}
                     />
                 </div>
             </div>

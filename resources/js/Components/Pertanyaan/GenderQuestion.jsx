@@ -1,8 +1,8 @@
 import { Mars, Venus } from "lucide-react";
-import Title from "./Title";
-import SelectBox from "./SelectBox";
+import Title from "../Title";
+import SelectBox from "../SelectBox";
 
-export default function GenderQuestion({ setGender }) {
+export default function GenderQuestion({ setData }) {
     return (
         <div className="flex flex-col items-center  pb-[5rem]">
             <span className="text-2xl opacity-80">Pertanyaan 2/4</span>
@@ -11,12 +11,12 @@ export default function GenderQuestion({ setGender }) {
                 <SelectBox
                     label={"Laki-laki"}
                     icon={Mars}
-                    onClick={setGender("Laki-laki")}
+                    onClick={() => setData("jenis_kelamin", "Laki-laki")}
                 />
                 <SelectBox
                     label={"Perempuan"}
                     icon={Venus}
-                    onClick={setGender("Perempuan")}
+                    onClick={() => setData("jenis_kelamin", "Perempuan")}
                 />
             </div>
         </div>

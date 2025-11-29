@@ -27,10 +27,10 @@ export default function Login() {
             <div className="logo">
                 <h1 className="font-bold text-4xl">NutriQ</h1>
             </div>
-            <div className="card max-w-[350px] w-full p-[1.5rem] rounded-xl fill-secondary shadow-lg">
+            <div className="card md:max-w-[350px] max-w-xs w-full p-[1.5rem] rounded-xl fill-secondary shadow-lg">
                 <form onSubmit={handeLogin} className="flex flex-col">
                     <div className="flex flex-col gap-[0.5rem]">
-                        <label htmlFor="">Email</label>
+                        <label htmlFor="" className="font-medium">Email</label>
                         <input
                             type="text"
                             onChange={(e) => setData("email", e.target.value)}
@@ -38,7 +38,7 @@ export default function Login() {
                         />
                     </div>
                     <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <label htmlFor="">Password</label>
+                        <label htmlFor="" className="font-medium">Password</label>
                         <input
                             type="text"
                             onChange={(e) =>
@@ -50,7 +50,7 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="mt-[2rem] bg-quartenary text-white p-[0.5rem] rounded-lg font-semibold hover:bg-quartenary/80"
+                        className="mt-[2rem] bg-quartenary text-white p-[0.6rem] rounded-lg font-semibold hover:bg-quartenary/80"
                     >
                         Login
                     </button>

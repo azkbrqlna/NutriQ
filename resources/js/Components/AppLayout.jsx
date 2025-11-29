@@ -33,7 +33,7 @@ export default function AppLayout({ children }) {
     return (
         <div className="min-h-screen flex bg-[#F1F3E0]">
             {/* SIDEBAR */}
-            <aside className="w-64 p-6 flex flex-col justify-between bg-[#D6E0B4]">
+            <aside className="w-64 p-6 flex flex-col justify-between bg-secondary">
                 {/* Logo + Brand */}
                 <div>
                     <div className="flex items-center gap-3 mb-8">
@@ -50,8 +50,8 @@ export default function AppLayout({ children }) {
                                 className={
                                     "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition " +
                                     (isActive(item.href)
-                                        ? "bg-[#AFCB8D]"
-                                        : "hover:bg-[#BFD9A1]")
+                                        ? "bg-tertiary"
+                                        : "hover:bg-tertiary/80")
                                 }
                             >
                                 {item.icon}
