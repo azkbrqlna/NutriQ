@@ -1,147 +1,118 @@
-import React from "react";
+import { useState } from "react";
+import { ChevronRight, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+
+import AgeQuestion from "@/Components/Pertanyaan/Umur";
+import WeightHeightQuestion from "@/Components/Pertanyaan/TinggiBerat";
+import ActivityQuestion from "@/Components/Pertanyaan/Aktivitas";
+import GenderQuestion from "@/Components/Pertanyaan/JenisKelamin";
 import { useForm } from "@inertiajs/react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Title from "@/Components/Title";
+
+const contents = [
+    AgeQuestion,
+    GenderQuestion,
+    WeightHeightQuestion,
+    ActivityQuestion,
+];
 
 export default function Personalisasi() {
+    const [questionNumber, setQuestionNumber] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const CurrentQuestion = contents[questionNumber];
+
     const { data, setData, post, processing, errors } = useForm({
         umur: "",
         jenis_kelamin: "",
-        tinggi: "",
-        berat: "",
         aktivitas: "",
+        berat: "",
+        tinggi: "",
     });
 
-    const submit = (e) => {
-        e.preventDefault();
+    const moveToNextQuestion = () => {
+        if (questionNumber < contents.length - 1) {
+            setQuestionNumber(questionNumber + 1);
+        } else {
+            setShowModal(true);
+        }
+    };
+
+    const moveToPrevQuestion = () => {
+        console.log("pindah halaman berikutnya");
+        console.log("nomor : ", questionNumber);
+
+        if (questionNumber != 0) {
+            setQuestionNumber(questionNumber - 1);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (
+            !data.tinggi ||
+            !data.berat ||
+            !data.aktivitas ||
+            !data.umur ||
+            !data.jenis_kelamin
+        ) {
+            alert("isi semua field!");
+        }
+        console.log(data);
+
         post("/personalisasi");
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <Card className="w-full max-w-lg p-4">
-                <CardHeader>
-                    <CardTitle className="text-xl text-center">
-                        Personalisasi Data Tubuh
-                    </CardTitle>
-                </CardHeader>
+        <div>
+            <div className="h-screen flex flex-col justify-center items-center z-0">
+                {/* pertanyaan dinamis */}
+                <CurrentQuestion setData={setData} data={data} />
 
-                <CardContent>
-                    <form onSubmit={submit} className="space-y-4">
-                        <div>
-                            <Label>Umur</Label>
-                            <Input
-                                type="number"
-                                value={data.umur}
-                                onChange={(e) =>
-                                    setData("umur", e.target.value)
-                                }
-                            />
-                            {errors.umur && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.umur}
-                                </p>
-                            )}
-                        </div>
+                <div className="max-w-6xl w-full fixed flex justify-between bottom-12 md:px-0 px-[2rem]">
+                    <button
+                        className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                        onClick={moveToPrevQuestion}
+                        disabled={questionNumber == 0}
+                    >
+                        <ChevronLeft />
+                        <span className="font-semibold ">Kembali</span>
+                    </button>
 
-                        <div>
-                            <Label>Jenis Kelamin</Label>
-                            <Select
-                                onValueChange={(v) =>
-                                    setData("jenis_kelamin", v)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Pilih" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Laki-laki">
-                                        Laki-laki
-                                    </SelectItem>
-                                    <SelectItem value="Perempuan">
-                                        Perempuan
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.jenis_kelamin && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.jenis_kelamin}
-                                </p>
-                            )}
-                        </div>
+                    <button
+                        className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                        onClick={moveToNextQuestion}
+                    >
+                        <span className="font-semibold">Lanjut</span>
+                        <ChevronRight />
+                    </button>
+                </div>
+            </div>
 
-                        <div>
-                            <Label>Tinggi (cm)</Label>
-                            <Input
-                                type="number"
-                                value={data.tinggi}
-                                onChange={(e) =>
-                                    setData("tinggi", e.target.value)
-                                }
-                            />
-                            {errors.tinggi && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.tinggi}
-                                </p>
-                            )}
-                        </div>
+            {/* modal */}
+            {showModal && (
+                <div className="w-full h-full fixed top-0 right-0 black-0 left-0 z-50 flex items-center justify-center bg-black/80">
+                    <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl md:p-[1.5rem] py-[1.5rem] px-[1rem] fill-secondary">
+                        <Title text={"Siap memulai perjalanan sehat Anda?"} className="text-center"/>
+                        <p className="text-center opacity-80 text-xl">
+                            Anda masih bisa mengubah data-data ini kapan saja
+                            melalui menu Profil.
+                        </p>
+                        <button
+                            className="fill-quartenary p-[1rem] rounded-lg font-semibold text-white mt-[1rem] hover:bg-quartenary/80"
+                            onClick={handleSubmit}
+                        >
+                            Hitung kebutuhan saya
+                        </button>
 
-                        <div>
-                            <Label>Berat (kg)</Label>
-                            <Input
-                                type="number"
-                                value={data.berat}
-                                onChange={(e) =>
-                                    setData("berat", e.target.value)
-                                }
-                            />
-                            {errors.berat && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.berat}
-                                </p>
-                            )}
-                        </div>
-
-                        <div>
-                            <Label>Aktivitas</Label>
-                            <Select
-                                onValueChange={(v) => setData("aktivitas", v)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Pilih Aktivitas" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ringan">
-                                        Ringan
-                                    </SelectItem>
-                                    <SelectItem value="sedang">
-                                        Sedang
-                                    </SelectItem>
-                                    <SelectItem value="berat">Berat</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.aktivitas && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.aktivitas}
-                                </p>
-                            )}
-                        </div>
-
-                        <Button className="w-full" disabled={processing}>
-                            {processing ? "Processing..." : "Simpan"}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                        {/* close button */}
+                        <button
+                            className="rounded-full p-[0.8rem] bg-primary absolute right-[-15px] top-[-15px] cursor-pointer"
+                            onClick={() => setShowModal(false)}
+                        >
+                            <X size={30} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,111 +1,97 @@
-import React from "react";
-import { useForm } from "@inertiajs/react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
+import { router, useForm, usePage } from "@inertiajs/react";
 
 export default function Register() {
+    const [isNotFilled, setIsnotFilled] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
         password: "",
-        password_confirmation: "",
     });
+    const { flash } = usePage().props;
 
-    const submit = (e) => {
+    const handleRegister = (e) => {
         e.preventDefault();
+        alert("mendaftarkan akun");
+
+        if (!data.name || !data.email || !data.password) {
+            alert("isi semua field!");
+            return;
+        }
+
+        if (data.password.length < 8) {
+            alert("Password minimal 8 karakter!");
+            return;
+        }
         post("/register");
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <Card className="w-full max-w-md p-4">
-                <CardHeader>
-                    <CardTitle className="text-center text-2xl">
+        <div className="h-screen flex flex-col  justify-center items-center gap-[2rem]">
+            <div className="logo">
+                <h1 className="font-bold text-4xl">NutriQ</h1>
+            </div>
+            <div className="card md:max-w-[350px] max-w-xs w-full p-[1.5rem] rounded-xl fill-secondary shadow-lg">
+                <form onSubmit={handleRegister} className="flex flex-col">
+                    <div className="flex flex-col gap-[0.5rem] ">
+                        <label htmlFor="" className="font-medium">
+                            Nama
+                        </label>
+                        <input
+                            type="text"
+                            onChange={(e) => setData("name", e.target.value)}
+                            className="fill-primary outline-none rounded-md"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
+                        <label htmlFor="" className="font-medium">
+                            Email
+                        </label>
+                        <input
+                            type="text"
+                            onChange={(e) => setData("email", e.target.value)}
+                            className="fill-primary outline-none rounded-lg"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
+                        <label htmlFor="" className="font-medium">
+                            Password
+                        </label>
+                        <input
+                            type="text"
+                            onChange={(e) =>
+                                setData("password", e.target.value)
+                            }
+                            className="fill-primary outline-none rounded-lg"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="mt-[2rem] fill-quartenary text-white p-[0.6rem] rounded-lg font-semibold"
+                    >
                         Register
-                    </CardTitle>
-                </CardHeader>
+                    </button>
+                </form>
 
-                <CardContent>
-                    <form onSubmit={submit} className="space-y-4">
-                        {/* Nama */}
-                        <div>
-                            <Label>Nama</Label>
-                            <Input
-                                value={data.name}
-                                onChange={(e) =>
-                                    setData("name", e.target.value)
-                                }
-                            />
-                            {errors.name && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.name}
-                                </p>
-                            )}
-                        </div>
+                <p className="text-center mt-[1rem]">
+                    Sudah punya akun?{" "}
+                    <span
+                        className="text-quartenary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
+                        onClick={() => router.visit("/login")}
+                    >
+                        Login
+                    </span>
+                </p>
 
-                        {/* Email */}
-                        <div>
-                            <Label>Email</Label>
-                            <Input
-                                type="email"
-                                value={data.email}
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
-                            />
-                            {errors.email && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.email}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <Label>Password (min 8 karakter)</Label>
-                            <Input
-                                type="password"
-                                value={data.password}
-                                onChange={(e) =>
-                                    setData("password", e.target.value)
-                                }
-                            />
-                            {errors.password && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.password}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Password Confirmation */}
-                        <div>
-                            <Label>Konfirmasi Password</Label>
-                            <Input
-                                type="password"
-                                value={data.password_confirmation}
-                                onChange={(e) =>
-                                    setData(
-                                        "password_confirmation",
-                                        e.target.value
-                                    )
-                                }
-                            />
-                            {errors.password_confirmation && (
-                                <p className="text-red-600 text-sm">
-                                    {errors.password_confirmation}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Submit */}
-                        <Button className="w-full" disabled={processing}>
-                            {processing ? "Processing..." : "Daftar"}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                {isNotFilled && (
+                    <div>
+                        <p>Harap isi semua field!</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -22,7 +22,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name'     => 'required',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8|',
         ]);
 
         $user = User::create([
@@ -33,7 +33,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('personalisasi')
+        return redirect("/personalisasi")
             ->with('success', 'Registrasi berhasil! Lengkapi data personal Anda.');
     }
 

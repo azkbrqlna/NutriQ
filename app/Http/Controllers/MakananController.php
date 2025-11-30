@@ -83,7 +83,8 @@ class MakananController extends Controller
     }
     public function show($id)
     {
-        $makanan = Makanan::with('detailMakanans')->findOrFail($id);
+        $userId = Auth::id();
+        $makanan = Makanan::with('detailMakanans')->where('user_id', $userId)->where('id', $id)->firstOrFail();
 
         return Inertia::render('Makanan/Show', [
             'makanan' => $makanan,

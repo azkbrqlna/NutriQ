@@ -9,22 +9,22 @@ export default function AppLayout({ children }) {
         {
             name: "Dashboard",
             href: "/dashboard",
-            icon: <LayoutDashboard className="w-5 h-5" />,
+            icon: <LayoutDashboard size={25} />,
         },
         {
             name: "Scan Makanan",
             href: "/scan",
-            icon: <ScanSearch className="w-5 h-5" />,
+            icon: <ScanSearch size={25} />,
         },
         {
             name: "Riwayat",
             href: "/riwayat",
-            icon: <History className="w-5 h-5" />,
+            icon: <History size={25} />,
         },
         {
             name: "Rekomendasi",
             href: "/rekomendasi",
-            icon: <Soup className="w-5 h-5" />,
+            icon: <Soup size={25} />,
         },
     ];
 
@@ -33,25 +33,25 @@ export default function AppLayout({ children }) {
     return (
         <div className="min-h-screen flex bg-[#F1F3E0]">
             {/* SIDEBAR */}
-            <aside className="w-64 p-6 flex flex-col justify-between bg-[#D6E0B4]">
+            <aside className="lg:max-w-[300px] max-w-[270px] fixed top-0 left-0 bottom-0 w-full p-6 md:flex hidden flex-col justify-between bg-secondary">
                 {/* Logo + Brand */}
                 <div>
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-full bg-[#8A9B73]" />
+                        <div className="w-10 h-10 rounded-full bg-quartenary" />
                         <span className="text-xl font-semibold">NutriQ</span>
                     </div>
 
                     {/* Menu Items */}
-                    <nav className="space-y-1">
+                    <nav className="space-y-5">
                         {menus.map((item, i) => (
                             <Link
                                 key={i}
                                 href={item.href}
                                 className={
-                                    "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition " +
+                                    "flex items-center text-lg gap-3 px-4 py-3 rounded-lg font-medium transition " +
                                     (isActive(item.href)
-                                        ? "bg-[#AFCB8D]"
-                                        : "hover:bg-[#BFD9A1]")
+                                        ? "bg-tertiary"
+                                        : "hover:bg-tertiary/80")
                                 }
                             >
                                 {item.icon}
@@ -63,7 +63,7 @@ export default function AppLayout({ children }) {
 
                 {/* User Section */}
                 <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-[#8A9B73] flex items-center justify-center text-white font-semibold">
+                    <div className="w-12 h-12 rounded-full bg-quartenary flex items-center justify-center text-white font-semibold">
                         {user?.name?.slice(0, 2).toUpperCase() ?? "US"}
                     </div>
                     <div>
@@ -79,7 +79,9 @@ export default function AppLayout({ children }) {
             </aside>
 
             {/* CONTENT */}
-            <main className="flex-1 ">{children}</main>
+            <main className="flex-1 lg:ml-[19rem] sm:ml-[17rem] ml-0 md:px-[4rem] py-[3rem] p-[2rem] w-full">
+                {children}
+            </main>
         </div>
     );
 }
