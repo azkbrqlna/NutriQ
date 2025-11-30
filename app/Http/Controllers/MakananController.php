@@ -28,7 +28,9 @@ class MakananController extends Controller
     {
         // 1. Validasi Gambar
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120' // Max 5MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // Max 5MB
+            'tanggal' => 'required|date',
+            'jam' => 'required'
         ]);
 
         // 2. Kirim File ke AI Service
@@ -49,8 +51,8 @@ class MakananController extends Controller
         $makanan = Makanan::create([
             'user_id' => $user->id,
             'nama' => $hasil['nama'],
-            'tanggal' => date('Y-m-d'), // Override tanggal AI dengan tanggal server agar akurat
-            'jam' => date('H:i'),
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
             'foto' => '/storage/' . $path, // Simpan path gambar
             'total_kalori' => $hasil['total']['total_kalori'],
             'total_protein' => $hasil['total']['total_protein'],
@@ -76,6 +78,15 @@ class MakananController extends Controller
             ]);
         }
 
-        return redirect()->route('makanan.index')->with('success', 'Makanan berhasil dianalisis.');
+       return redirect()->route('makanan.show', $makanan->id);
+
+    }
+    public function show($id)
+    {
+        $makanan = Makanan::with('detailMakanans')->findOrFail($id);
+
+        return Inertia::render('Makanan/Show', [
+            'makanan' => $makanan,
+        ]);
     }
 }

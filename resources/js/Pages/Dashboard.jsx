@@ -1,7 +1,9 @@
 import React from "react";
+import React from "react";
 import { Link, useForm } from "@inertiajs/react";
 
 export default function Dashboard() {
+    return <div>Dashboard</div>;
     const { post } = useForm();
 
     function handleLogout(e) {
