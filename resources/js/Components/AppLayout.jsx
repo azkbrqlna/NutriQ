@@ -79,7 +79,7 @@ export default function AppLayout({ children }) {
             </aside>
 
             {/* CONTENT */}
-            <main className="flex-1 p-10">{children}</main>
+            <main className="flex-1 ">{children}</main>
         </div>
     );
 }

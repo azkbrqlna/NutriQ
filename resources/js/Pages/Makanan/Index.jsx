@@ -33,57 +33,87 @@ export default function ScanMakanan() {
 
     return (
         <AppLayout>
-            <div className="min-h-screen p-10 bg-black">
+            <div className="min-h-screen bg-[#EEF2D6] px-10 pt-10 pb-20">
                 <Head title="Scan Makanan" />
 
-                <div className="max-w-5xl mx-auto w-full">
-                    <h1 className="text-3xl font-semibold mb-10">
+                <div className="max-w-4xl mx-auto w-full">
+                    {/* Title */}
+                    <h1 className="text-3xl font-semibold mb-8 text-black">
                         Scan Makanan
                     </h1>
 
                     <form
                         onSubmit={submit}
-                        className="w-full space-y-10"
+                        className="w-full space-y-8"
                         encType="multipart/form-data"
                     >
                         {/* Input Tanggal & Jam */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                             {/* Tanggal */}
-                            <div className="space-y-2 w-full">
-                                <Label className="text-lg">Tanggal</Label>
+                            <div className="space-y-1 w-full">
+                                <Label className="text-[15px] font-medium text-black">
+                                    Tanggal
+                                </Label>
                                 <div className="relative w-full">
                                     <Input
+                                        id="tanggalInput"
                                         type="date"
-                                        className="w-full bg-[#CDDCAD] border-none rounded-lg text-black placeholder:text-gray-700"
+                                        className="w-full bg-white border border-[#C7D2AB] rounded-lg 
+                   text-black px-4 py-2 placeholder:text-gray-600
+                   appearance-none
+                   [&::-webkit-calendar-picker-indicator]:opacity-0"
                                         value={data.tanggal}
                                         onChange={(e) =>
                                             setData("tanggal", e.target.value)
                                         }
                                     />
-                                    <Calendar className="absolute right-3 top-3 h-5 w-5 text-gray-700" />
+
+                                    <Calendar
+                                        className="absolute right-3 top-2.5 h-5 w-5 text-gray-600 cursor-pointer"
+                                        onClick={() =>
+                                            document
+                                                .getElementById("tanggalInput")
+                                                .showPicker()
+                                        }
+                                    />
                                 </div>
                             </div>
 
                             {/* Jam */}
-                            <div className="space-y-2 w-full">
-                                <Label className="text-lg">Jam</Label>
+                            <div className="space-y-1 w-full">
+                                <Label className="text-[15px] font-medium text-black">
+                                    Jam
+                                </Label>
                                 <div className="relative w-full">
                                     <Input
+                                        id="jamInput"
                                         type="time"
-                                        className="w-full bg-[#CDDCAD] border-none rounded-lg text-black placeholder:text-gray-700"
+                                        className="w-full bg-white border border-[#C7D2AB] rounded-lg 
+                   text-black px-4 py-2 placeholder:text-gray-600
+                   appearance-none
+                   [&::-webkit-calendar-picker-indicator]:opacity-0
+                   [&::-webkit-inner-spin-button]:appearance-none"
                                         value={data.jam}
                                         onChange={(e) =>
                                             setData("jam", e.target.value)
                                         }
                                     />
-                                    <Clock className="absolute right-3 top-3 h-5 w-5 text-gray-700" />
+
+                                    <Clock
+                                        className="absolute right-3 top-2.5 h-5 w-5 text-gray-600 cursor-pointer"
+                                        onClick={() =>
+                                            document
+                                                .getElementById("jamInput")
+                                                .showPicker()
+                                        }
+                                    />
                                 </div>
                             </div>
                         </div>
 
                         {/* Upload Area */}
                         <div
-                            className="border-2 border-dashed rounded-xl bg-[#DDE8BE] p-10 w-full flex flex-col items-center text-center cursor-pointer hover:bg-[#d4e0b0] transition"
+                            className="border-2 border-dashed border-[#A8C48C] bg-white rounded-xl w-full min-h-[260px] flex flex-col justify-center items-center text-center cursor-pointer hover:bg-[#f2f7e8] transition"
                             onClick={() =>
                                 document.getElementById("foodImage").click()
                             }
@@ -91,7 +121,7 @@ export default function ScanMakanan() {
                             {preview ? (
                                 <img
                                     src={preview}
-                                    className="max-h-64 rounded-lg object-cover shadow"
+                                    className="max-h-56 rounded-lg object-cover shadow"
                                 />
                             ) : (
                                 <div>
@@ -115,9 +145,9 @@ export default function ScanMakanan() {
                         </div>
 
                         {/* Button */}
-                        <div className="flex justify-end w-full">
+                        <div className="flex justify-end">
                             <Button
-                                className="bg-[#6E8F5C] text-white px-10 py-6 text-lg rounded-xl hover:bg-[#5d7d4d]"
+                                className="bg-[#869F77] text-white px-8 py-3 text-[15px] rounded-lg hover:bg-[#7a926c]"
                                 disabled={processing}
                                 type="submit"
                             >
@@ -127,7 +157,7 @@ export default function ScanMakanan() {
                                         Menganalisis...
                                     </>
                                 ) : (
-                                    "Analisa Sekarang"
+                                    "Analisa Nutrisi"
                                 )}
                             </Button>
                         </div>
