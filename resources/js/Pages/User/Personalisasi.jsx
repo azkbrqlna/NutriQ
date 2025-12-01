@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
-
-import AgeQuestion from "@/Components/Pertanyaan/Umur";
-import WeightHeightQuestion from "@/Components/Pertanyaan/TinggiBerat";
-import ActivityQuestion from "@/Components/Pertanyaan/Aktivitas";
-import GenderQuestion from "@/Components/Pertanyaan/JenisKelamin";
 import { useForm } from "@inertiajs/react";
+
+import AgeQuestion from "@/Components/Personalisasi/Umur";
+import WeightHeightQuestion from "@/Components/Personalisasi/TinggiBerat";
+import ActivityQuestion from "@/Components/Personalisasi/Aktivitas";
+import GenderQuestion from "@/Components/Personalisasi/JenisKelamin";
 import Title from "@/Components/Title";
+import Analisis from "@/Components/Personalisasi/Analisis";
 
 const contents = [
     AgeQuestion,
@@ -60,33 +61,41 @@ export default function Personalisasi() {
         }
 
         post("/personalisasi");
+        setShowModal(false)
+        // setIsLoading(true);
     };
 
     return (
         <div>
-            <div className="h-screen flex flex-col justify-center items-center z-0">
-                {/* pertanyaan dinamis */}
-                <CurrentQuestion setData={setData} data={data} />
+            {processing ? (
+                <Analisis />
+            ) : (
+                <div className="h-screen flex flex-col justify-center items-center z-0">
+                    {/* pertanyaan dinamis */}
+                    <CurrentQuestion setData={setData} data={data} />
 
-                <div className="max-w-6xl w-full fixed flex justify-between bottom-12 md:px-0 px-[2rem]">
-                    <button
-                        className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
-                        onClick={moveToPrevQuestion}
-                        disabled={questionNumber == 0}
-                    >
-                        <ChevronLeft />
-                        <span className="font-semibold ">Kembali</span>
-                    </button>
+                    <div className="max-w-6xl w-full fixed flex justify-between bottom-12 md:px-0 px-[2rem]">
+                        <button
+                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                            onClick={moveToPrevQuestion}
+                            disabled={questionNumber == 0}
+                        >
+                            <ChevronLeft />
+                            <span className="font-medium ">Kembali</span>
+                        </button>
 
-                    <button
-                        className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
-                        onClick={moveToNextQuestion}
-                    >
-                        <span className="font-semibold">Lanjut</span>
-                        <ChevronRight />
-                    </button>
+                        <button
+                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                            onClick={moveToNextQuestion}
+                        >
+                            <span className="font-medium">Lanjut</span>
+                            <ChevronRight />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* analisis */}
 
             {/* modal */}
             {showModal && (
