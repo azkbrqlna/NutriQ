@@ -28,8 +28,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/makanan', [MakananController::class, 'index'])->name('makanan.index');
     Route::post('/makanan/generate', [MakananController::class, 'generate_makanan'])->name('makanan.generate');
-Route::get('/makanan/{id}', [MakananController::class, 'show'])
-    ->name('makanan.show');
+    Route::get('/makanan/{id}', [MakananController::class, 'show'])->name('makanan.show');
 });
 
 
