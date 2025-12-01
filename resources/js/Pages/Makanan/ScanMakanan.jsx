@@ -152,7 +152,7 @@ export default function ScanMakanan() {
                         {/* Button */}
                         <div className="flex justify-end">
                             <Button
-                                className="bg-quartenary text-white p-[1.7rem] text-[15px] rounded-lg hover:bg-quartenary/80 mt-[1rem] font-semibold"
+                                className="bg-quartenary text-white p-[1.5rem] text-[15px] rounded-lg hover:bg-quartenary/80 mt-[1rem] font-semibold"
                                 disabled={processing}
                                 type="submit"
                             >
