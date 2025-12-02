@@ -80,18 +80,26 @@ class MakananController extends Controller
         ]);
     }
 
-    public function riwayat()
-    {
-        $userId = Auth::id();
-        $makanans = Makanan::where('user_id', $userId)
-            ->orderBy('tanggal', 'desc')
-            ->orderBy('jam', 'desc')
-            ->get();
+  public function riwayat(Request $request)
+{
+    $userId = Auth::id();
 
-        dd($makanans);
+    $makanans = Makanan::where('user_id', $userId)
+        ->when($request->search, function ($query) use ($request) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        })
+        ->when($request->tanggal, function ($query) use ($request) {
+            $query->where('tanggal', $request->tanggal);
+        })
+        ->orderBy('tanggal', 'desc')
+        ->orderBy('jam', 'desc')
+        ->paginate(6)
+        ->withQueryString();
 
-        return Inertia::render('Makanan/Riwayat', [
-            'makanans' => $makanans,
-        ]);
-    }
+    return Inertia::render('Riwayat/Riwayat', [
+        'makanans' => $makanans,
+        'filters' => $request->only('search', 'tanggal'),
+    ]);
+}
+
 }

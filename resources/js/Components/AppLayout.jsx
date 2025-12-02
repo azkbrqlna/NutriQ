@@ -33,7 +33,10 @@ export default function AppLayout({ children }) {
         },
     ];
 
-    const isActive = (path) => url.startsWith(path);
+    const isActive = (path) => {
+        const cleanUrl = url.split("?")[0]; // hilangkan query string
+        return cleanUrl === path;
+    };
 
     return (
         <div className="min-h-screen flex bg-[#F1F3E0]">

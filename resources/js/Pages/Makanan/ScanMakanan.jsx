@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import { Calendar, Clock, Image as ImageIcon, Loader2 } from "lucide-react";
 
@@ -6,23 +6,64 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import AppLayout from "@/Components/AppLayout";
-import Title from "@/Components/Title";
 
 export default function ScanMakanan() {
     const [preview, setPreview] = useState(null);
+    const [dragActive, setDragActive] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
-    const { data, setData, post, processing, errors } = useForm({
+    const timeoutRef = useRef(null);
+
+    const { data, setData, post, processing } = useForm({
         tanggal: "",
         jam: "",
         image: null,
     });
 
+    // 5MB error handler
+    const triggerError = (msg) => {
+        setErrorMsg(msg);
+
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            setErrorMsg("");
+        }, 5000);
+    };
+
+    // Process file (whether from input or drag-drop)
+    const processFile = (file) => {
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            triggerError("Ukuran file melebihi batas maksimal 5MB!");
+            return;
+        }
+
+        setData("image", file);
+        setPreview(URL.createObjectURL(file));
+    };
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setData("image", file);
-            setPreview(URL.createObjectURL(file));
-        }
+        processFile(file);
+    };
+
+    // DRAG EVENTS
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setDragActive(true);
+    };
+
+    const handleDragLeave = () => {
+        setDragActive(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragActive(false);
+
+        const file = e.dataTransfer.files[0];
+        processFile(file);
     };
 
     const submit = (e) => {
@@ -36,15 +77,16 @@ export default function ScanMakanan() {
         <AppLayout>
             <div>
                 <Head title="Scan Makanan" />
+
                 <div className="max-w-3xl w-full">
                     {/* Title */}
                     <h1 className="md:text-4xl text-3xl font-bold">
                         Scan Makanan
                     </h1>
 
-                    <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1rem]">
+                    <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] mt-[1rem]">
                         Unggah gambar makanan Anda dan kami akan menganalisis
-                        nutrisi yang ada pada makanan secara otomatis!
+                        nutrisi secara otomatis!
                     </p>
 
                     <form
@@ -52,8 +94,8 @@ export default function ScanMakanan() {
                         className="w-full space-y-8 mt-[1rem]"
                         encType="multipart/form-data"
                     >
-                        {/* Input Tanggal & Jam */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 gap-6 w-full">
+                        {/* DATE & TIME */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 gap-6">
                             {/* Tanggal */}
                             <div className="flex flex-col gap-[0.6rem] relative w-full">
                                 <Label className="text-[15px] text-lg font-medium text-black">
@@ -64,15 +106,13 @@ export default function ScanMakanan() {
                                         id="tanggalInput"
                                         type="date"
                                         className="w-full bg-white border border-[#C7D2AB] rounded-lg 
-                                        text-black py-[1.4rem] px-[1rem] placeholder:text-gray-600
-                                        appearance-none
+                                        text-black py-[1.4rem] px-[1rem] 
                                         [&::-webkit-calendar-picker-indicator]:opacity-0"
                                         value={data.tanggal}
                                         onChange={(e) =>
                                             setData("tanggal", e.target.value)
                                         }
                                     />
-
                                     <Calendar
                                         className="absolute right-3 top-3.5 h-5 w-5 text-gray-600 cursor-pointer"
                                         onClick={() =>
@@ -94,8 +134,7 @@ export default function ScanMakanan() {
                                         id="jamInput"
                                         type="time"
                                         className="w-full bg-white border border-[#C7D2AB] rounded-lg 
-                                        text-black py-[1.4rem] px-[1rem] placeholder:text-gray-600
-                                        appearance-none
+                                        text-black py-[1.4rem] px-[1rem]
                                         [&::-webkit-calendar-picker-indicator]:opacity-0
                                         [&::-webkit-inner-spin-button]:appearance-none"
                                         value={data.jam}
@@ -116,26 +155,54 @@ export default function ScanMakanan() {
                             </div>
                         </div>
 
-                        {/* Upload Area */}
+                        {/* ERROR MESSAGE */}
+                        {errorMsg && (
+                            <p className="text-red-600 font-medium text-sm animate-pulse">
+                                {errorMsg}
+                            </p>
+                        )}
+
+                        {/* UPLOAD AREA + DRAG & DROP */}
                         <div
-                            className="border-2 border-dashed border-[#A8C48C] bg-white rounded-xl w-full min-h-[260px] flex flex-col justify-center items-center text-center cursor-pointer hover:bg-secondary/50 transition"
+                            className={`
+                                border-2 border-dashed rounded-xl w-full min-h-[260px] 
+                                flex flex-col justify-center items-center text-center cursor-pointer 
+                                transition-all duration-300 bg-white shadow-sm
+                                ${
+                                    dragActive
+                                        ? "border-red-400 bg-red-50 scale-[1.02]"
+                                        : "border-[#A8C48C] hover:bg-secondary/50"
+                                }
+                            `}
                             onClick={() =>
                                 document.getElementById("foodImage").click()
                             }
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
                         >
                             {preview ? (
                                 <img
                                     src={preview}
-                                    className="max-h-56 rounded-lg object-cover shadow"
+                                    className="max-h-56 rounded-lg object-cover shadow-md"
                                 />
                             ) : (
-                                <div>
-                                    <ImageIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-                                    <p className="font-medium text-gray-800 ">
-                                        Seret atau klik untuk memasukkan gambar
+                                <div className="transition-all">
+                                    <ImageIcon
+                                        className={`
+                                            mx-auto mb-3 h-12 w-12 
+                                            ${
+                                                dragActive
+                                                    ? "text-red-500 animate-bounce"
+                                                    : "text-gray-600"
+                                            }
+                                        `}
+                                    />
+                                    <p className="font-medium text-gray-800">
+                                        Seret & jatuhkan gambar di sini
                                     </p>
                                     <p className="text-sm text-gray-600 mt-1">
-                                        Support JPG, PNG, WebP (max 5MB)
+                                        atau klik untuk memilih (max 5MB)
                                     </p>
                                 </div>
                             )}
@@ -149,7 +216,7 @@ export default function ScanMakanan() {
                             />
                         </div>
 
-                        {/* Button */}
+                        {/* SUBMIT BUTTON */}
                         <div className="flex justify-end">
                             <Button
                                 className="bg-quartenary md:w-auto w-full text-white p-[1.5rem] text-[15px] rounded-lg hover:bg-quartenary/80 mt-[1rem] font-semibold"
