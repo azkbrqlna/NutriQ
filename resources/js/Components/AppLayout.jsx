@@ -1,9 +1,14 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, useForm, usePage } from "@inertiajs/react";
 import { LayoutDashboard, ScanSearch, History, Soup } from "lucide-react";
 
 export default function AppLayout({ children }) {
     const { url, props } = usePage();
     const user = props.auth?.user;
+    const { post } = useForm();
+
+    const handleLogout = () => {
+        post("/logout");
+    };
 
     const menus = [
         {
@@ -48,7 +53,7 @@ export default function AppLayout({ children }) {
                                 key={i}
                                 href={item.href}
                                 className={
-                                    "flex items-center text-lg gap-3 px-4 py-3 rounded-lg font-medium transition " +
+                                    "flex items-center text-lg gap-5 px-4 py-2 rounded-lg  transition " +
                                     (isActive(item.href)
                                         ? "bg-tertiary"
                                         : "hover:bg-tertiary/80")
@@ -64,16 +69,20 @@ export default function AppLayout({ children }) {
                 {/* User Section */}
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-quartenary flex items-center justify-center text-white font-semibold">
-                        {user?.name?.slice(0, 2).toUpperCase() ?? "US"}
+                        <span className="text-lg">
+                            {user?.name?.slice(0, 2).toUpperCase() ?? "US"}
+                        </span>
                     </div>
                     <div>
-                        <p className="font-semibold">{user?.name ?? "User"}</p>
-                        <Link
-                            href="/profile"
-                            className="text-sm text-gray-700 hover:underline"
+                        <p className="font-semibold text-lg">
+                            {user?.name ?? "User"}
+                        </p>
+                        <button
+                            className="text-gray-700 hover:underline"
+                            onClick={handleLogout}
                         >
-                            View profile
-                        </Link>
+                            Keluar
+                        </button>
                     </div>
                 </div>
             </aside>

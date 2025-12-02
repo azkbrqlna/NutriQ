@@ -4,9 +4,10 @@ export default function SelectBox({ icon: Icon, label, active, onClick }) {
             <button
                 onClick={onClick}
                 className={`
-                    fill-secondary rounded-xl md:p-[2.5rem] p-[2rem] gap-[1rem] hover:opacity-80
-                    ${active ? "fill-tertiary" : "fill-secondary"}
-                `}
+                 rounded-full p-[2rem] gap-[1rem] hover:opacity-80 
+                transition duration-200 ease-in-out
+                ${active ? "text-white bg-quartenary" : "bg-white"}
+    `}
             >
                 <Icon size={54} />
             </button>

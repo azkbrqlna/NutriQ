@@ -31,3 +31,38 @@
         @apply bg-quartenary;
     }
 }
+
+/* Hilangkan outline default di semua elemen form */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Style default semua input */
+input,
+select,
+textarea {
+    background-color: white;
+    border: 1px solid #d1d5db; /* Tailwind gray-300 */
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem; /* rounded-md */
+    transition: border-color 0.2s;
+    font-size: 1rem;
+}
+
+/* Border berubah saat focus */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #4f46e5; /* ganti pakai warna quartenary kamu */
+}
+
+/* Semua button tanpa outline */
+button {
+    outline: none !important;
+    border: none;
+}
+

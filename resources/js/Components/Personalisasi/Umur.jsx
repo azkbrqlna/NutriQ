@@ -7,7 +7,7 @@ export default function Umur({ setData, data }) {
             <Title text={"Berapa umur Anda?"} className="text-center" />
             <input
                 type="text"
-                className="w-full md:max-w-xs max-w-[250px] fill-secondary rounded-xl p-[1rem] text-black mt-[1.5rem]"
+                className="w-full md:max-w-xs max-w-[250px] bg-white rounded-xl p-[1rem] text-black mt-[1.5rem]"
                 placeholder="Masukkan umur Anda (tahun)"
                 onChange={(e) => setData("umur", e.target.value)}
                 value={data.umur}

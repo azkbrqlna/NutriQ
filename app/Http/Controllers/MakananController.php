@@ -75,7 +75,7 @@ class MakananController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        return Inertia::render('Makanan/Show', [
+        return Inertia::render('Makanan/HasilScanMakanan', [
             'makanan' => $makanan,
         ]);
     }

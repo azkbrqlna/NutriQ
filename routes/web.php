@@ -32,7 +32,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/riwayat', [MakananController::class, 'riwayat'])->name('riwayat.index');
     Route::get('/riwayat/{slug}', [MakananController::class, 'show'])->name('riwayat.show');
 });
-
-
-
-

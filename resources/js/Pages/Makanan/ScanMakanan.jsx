@@ -6,6 +6,7 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import AppLayout from "@/Components/AppLayout";
+import Title from "@/Components/Title";
 
 export default function ScanMakanan() {
     const [preview, setPreview] = useState(null);
@@ -33,25 +34,29 @@ export default function ScanMakanan() {
 
     return (
         <AppLayout>
-            <div className="min-h-screen bg-[#EEF2D6] px-10 pt-10 pb-20">
+            <div>
                 <Head title="Scan Makanan" />
-
-                <div className="max-w-4xl mx-auto w-full">
+                <div className="max-w-3xl w-full">
                     {/* Title */}
-                    <h1 className="text-3xl font-semibold mb-8 text-black">
+                    <h1 className="md:text-4xl text-3xl font-bold">
                         Scan Makanan
                     </h1>
 
+                    <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1rem]">
+                        Unggah gambar makanan Anda dan kami akan menganalisis
+                        nutrisi yang ada pada makanan secara otomatis!
+                    </p>
+
                     <form
                         onSubmit={submit}
-                        className="w-full space-y-8"
+                        className="w-full space-y-8 mt-[1rem]"
                         encType="multipart/form-data"
                     >
                         {/* Input Tanggal & Jam */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 gap-6 w-full">
                             {/* Tanggal */}
-                            <div className="space-y-1 w-full">
-                                <Label className="text-[15px] font-medium text-black">
+                            <div className="flex flex-col gap-[0.6rem] relative w-full">
+                                <Label className="text-[15px] text-lg font-medium text-black">
                                     Tanggal
                                 </Label>
                                 <div className="relative w-full">
@@ -59,9 +64,9 @@ export default function ScanMakanan() {
                                         id="tanggalInput"
                                         type="date"
                                         className="w-full bg-white border border-[#C7D2AB] rounded-lg 
-                   text-black px-4 py-2 placeholder:text-gray-600
-                   appearance-none
-                   [&::-webkit-calendar-picker-indicator]:opacity-0"
+                                        text-black py-[1.4rem] px-[1rem] placeholder:text-gray-600
+                                        appearance-none
+                                        [&::-webkit-calendar-picker-indicator]:opacity-0"
                                         value={data.tanggal}
                                         onChange={(e) =>
                                             setData("tanggal", e.target.value)
@@ -69,7 +74,7 @@ export default function ScanMakanan() {
                                     />
 
                                     <Calendar
-                                        className="absolute right-3 top-2.5 h-5 w-5 text-gray-600 cursor-pointer"
+                                        className="absolute right-3 top-3.5 h-5 w-5 text-gray-600 cursor-pointer"
                                         onClick={() =>
                                             document
                                                 .getElementById("tanggalInput")
@@ -80,19 +85,19 @@ export default function ScanMakanan() {
                             </div>
 
                             {/* Jam */}
-                            <div className="space-y-1 w-full">
-                                <Label className="text-[15px] font-medium text-black">
+                            <div className="flex flex-col gap-[0.6rem] relative w-full">
+                                <Label className="text-[15px] text-lg font-medium text-black">
                                     Jam
                                 </Label>
-                                <div className="relative w-full">
+                                <div className="relative w-full flex items-center">
                                     <Input
                                         id="jamInput"
                                         type="time"
                                         className="w-full bg-white border border-[#C7D2AB] rounded-lg 
-                   text-black px-4 py-2 placeholder:text-gray-600
-                   appearance-none
-                   [&::-webkit-calendar-picker-indicator]:opacity-0
-                   [&::-webkit-inner-spin-button]:appearance-none"
+                                        text-black py-[1.4rem] px-[1rem] placeholder:text-gray-600
+                                        appearance-none
+                                        [&::-webkit-calendar-picker-indicator]:opacity-0
+                                        [&::-webkit-inner-spin-button]:appearance-none"
                                         value={data.jam}
                                         onChange={(e) =>
                                             setData("jam", e.target.value)
@@ -100,7 +105,7 @@ export default function ScanMakanan() {
                                     />
 
                                     <Clock
-                                        className="absolute right-3 top-2.5 h-5 w-5 text-gray-600 cursor-pointer"
+                                        className="absolute right-3 top-3.5 h-5 w-5 text-gray-600 cursor-pointer"
                                         onClick={() =>
                                             document
                                                 .getElementById("jamInput")
@@ -113,7 +118,7 @@ export default function ScanMakanan() {
 
                         {/* Upload Area */}
                         <div
-                            className="border-2 border-dashed border-[#A8C48C] bg-white rounded-xl w-full min-h-[260px] flex flex-col justify-center items-center text-center cursor-pointer hover:bg-[#f2f7e8] transition"
+                            className="border-2 border-dashed border-[#A8C48C] bg-white rounded-xl w-full min-h-[260px] flex flex-col justify-center items-center text-center cursor-pointer hover:bg-secondary/50 transition"
                             onClick={() =>
                                 document.getElementById("foodImage").click()
                             }
@@ -126,7 +131,7 @@ export default function ScanMakanan() {
                             ) : (
                                 <div>
                                     <ImageIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-                                    <p className="font-medium text-gray-800">
+                                    <p className="font-medium text-gray-800 ">
                                         Seret atau klik untuk memasukkan gambar
                                     </p>
                                     <p className="text-sm text-gray-600 mt-1">
@@ -147,7 +152,7 @@ export default function ScanMakanan() {
                         {/* Button */}
                         <div className="flex justify-end">
                             <Button
-                                className="bg-[#869F77] text-white px-8 py-3 text-[15px] rounded-lg hover:bg-[#7a926c]"
+                                className="bg-quartenary md:w-auto w-full text-white p-[1.5rem] text-[15px] rounded-lg hover:bg-quartenary/80 mt-[1rem] font-semibold"
                                 disabled={processing}
                                 type="submit"
                             >
