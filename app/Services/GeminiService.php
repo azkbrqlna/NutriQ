@@ -129,47 +129,52 @@ class GeminiService
         return $json;
     }
 
-    /* =======================================================================
-       GENERATE MAKANAN (ANALISIS GAMBAR) - PAKAI FALLBACK
-       ======================================================================= */
     public function generateMakanan($imageFile)
     {
         $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
         $mimeType = $imageFile->getMimeType();
 
         $prompt = "
-            Kamu adalah Ahli Gizi. Analisis gambar ini.
-            Pastikan ini adalah makanan. Jika bukan makanan, balas:
+            Bertindaklah sebagai Ahli Gizi Klinis spesialis masakan Indonesia.
+            Tugasmu adalah menganalisis gambar makanan yang diunggah.
 
-            {\"error\": \"bukan_makanan\"}
+            LANGKAH ANALISIS:
+            1. Identifikasi apakah gambar tersebut adalah makanan.
+            2. Jika BUKAN makanan (misal: pemandangan, benda mati, selfie, minuman), balas JSON: {\"error\": \"bukan_makanan\"}
+            3. Jika MAKANAN:
+            - Identifikasi setiap komponen yang terlihat (nasi, lauk, sayur, saus/sambal).
+            - Perkirakan gramasi/berat per komponen (misal: 1 piring nasi = 150g).
+            - Hitung estimasi nutrisi berdasarkan Data Komposisi Pangan Indonesia (TKPI) atau USDA.
+            - Berikan nama makanan yang spesifik (contoh: 'Nasi Ayam Geprek', bukan cuma 'Nasi Ayam').
 
-            Jika makanan, hasilkan JSON VALID saja tanpa teks lain:
+            ATURAN OUTPUT:
+            - Gunakan Bahasa Indonesia.
+            - Semua angka nutrisi harus INTEGER (bilangan bulat), bulatkan jika perlu.
+            - Jangan sertakan markdown (```json). Langsung raw JSON.
 
+            FORMAT JSON YANG WAJIB DIIKUTI:
             {
-                \"nama\": string,
-                \"tanggal\": string,
-                \"jam\": string,
-                \"foto\": null,
+                \"nama\": \"Nama Makanan Utama\",
                 \"detail\": [
                     {
-                        \"nama\": string,
-                        \"kalori\": number,
-                        \"protein\": number,
-                        \"karbohidrat\": number,
-                        \"lemak\": number,
-                        \"serat\": number,
-                        \"natrium\": number,
-                        \"gula_tambahan\": number
+                        \"nama\": \"Nama Komponen (misal: Dada Ayam Goreng)\",
+                        \"kalori\": int,
+                        \"protein\": int,
+                        \"karbohidrat\": int,
+                        \"lemak\": int,
+                        \"serat\": int,
+                        \"natrium\": int (mg),
+                        \"gula_tambahan\": int
                     }
                 ],
                 \"total\": {
-                    \"total_kalori\": number,
-                    \"total_protein\": number,
-                    \"total_karbohidrat\": number,
-                    \"total_lemak\": number,
-                    \"total_serat\": number,
-                    \"total_natrium\": number,
-                    \"total_gula_tambahan\": number
+                    \"total_kalori\": int,
+                    \"total_protein\": int,
+                    \"total_karbohidrat\": int,
+                    \"total_lemak\": int,
+                    \"total_serat\": int,
+                    \"total_natrium\": int,
+                    \"total_gula_tambahan\": int
                 }
             }
         ";
@@ -187,8 +192,8 @@ class GeminiService
                 ]
             ]],
             "generationConfig" => [
-                "temperature" => 0.1,
-                "maxOutputTokens" => 8192,
+                "temperature" => 0.2, // Turunkan temperature agar lebih konsisten/faktual
+                "maxOutputTokens" => 4096,
             ]
         ];
 
@@ -205,15 +210,19 @@ class GeminiService
             return ['error' => 'respon_kosong'];
         }
 
+        // Bersihkan Markdown jikalau AI tetap bandel
         $text = preg_replace('/^```json\s*|\s*```$/', '', $text);
-
-        preg_match('/\{(?:[^{}]|(?R))*\}/', $text, $match);
+        
+        // Parse JSON
+        // Gunakan regex flag 's' (dot matches newline) untuk keamanan ekstra
+        preg_match('/\{(?:[^{}]|(?R))*\}/s', $text, $match);
 
         if (!isset($match[0])) {
-            return ['error' => 'json_tidak_valid'];
+            // Fallback: coba parse langsung text-nya siapa tau sudah bersih
+            $json = json_decode($text, true);
+        } else {
+            $json = json_decode($match[0], true);
         }
-
-        $json = json_decode($match[0], true);
 
         if (!$json) {
             return ['error' => 'json_tidak_bisa_parse'];
@@ -223,6 +232,7 @@ class GeminiService
             return ['error' => 'bukan_makanan'];
         }
 
+        // Validasi struktur kunci penting saja
         if (!isset($json['nama']) || !isset($json['detail']) || !isset($json['total'])) {
             return ['error' => 'struktur_tidak_lengkap'];
         }
