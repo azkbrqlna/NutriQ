@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { router, useForm, usePage } from "@inertiajs/react";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Register() {
     const [isNotFilled, setIsnotFilled] = useState(false);
@@ -40,10 +42,10 @@ export default function Register() {
         <div className="h-screen flex flex-col justify-center items-center gap-[1.5rem]">
             <div className="logo text-center">
                 <h1 className="font-bold text-4xl">NutriQ</h1>
-                <p>Mulai perjalanan sehat Anda!</p>
+                <p className="text-lg">Mulai perjalanan sehat Anda!</p>
             </div>
             {/* Mengubah bg-secondary menjadi bg-white/bg-card jika ada di theme Anda */}
-            <div className="card md:max-w-[340px] max-w-xs w-full p-[1.5rem] rounded-2xl bg-secondary shadow-xl">
+            <div className="card md:max-w-[330px] max-w-xs w-full p-[1.5rem] rounded-2xl bg-white shadow-xl">
                 <form onSubmit={handleRegister} className="flex flex-col">
                     <div className="flex flex-col gap-[0.5rem] ">
                         <label htmlFor="" className="font-medium text-gray-700">
@@ -113,7 +115,7 @@ export default function Register() {
 
                     <button
                         type="submit"
-                        className={`mt-[2rem] fill-quartenary text-white p-[0.6rem] rounded-lg font-semibold hover:bg-quartenary/80  flex items-center justify-center transition-colors duration-200`}
+                        className={`mt-[2rem] fill-quartenary text-white p-[0.6rem] rounded-lg font-semibold hover:bg-quartenary/80 flex items-center justify-center transition-colors duration-200`}
                         disabled={processing}
                     >
                         {!processing ? (
@@ -133,13 +135,13 @@ export default function Register() {
                         Login
                     </span>
                 </p>
-
-                {isNotFilled && (
-                    <div>
-                        <p>Harap isi semua field!</p>
-                    </div>
-                )}
             </div>
+            {/* {!isNotFilled && (
+                <Alert variant="destructive" className="max-w-xs w-full flex items-center justify-center fixed top-12 ">
+                    <AlertCircleIcon />
+                    <AlertTitle>Unable to process your payment.</AlertTitle>
+                </Alert>
+            )} */}
         </div>
     );
 }

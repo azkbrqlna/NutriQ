@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/personalisasi', [UserController::class, 'index'])->name('personalisasi');
     Route::post('/personalisasi', [UserController::class, 'store'])->name('personalisasi.store');
+    Route::get('/profil', [UserController::class, 'show_profil']);
 
     Route::get('/scan-makanan', [MakananController::class, 'index'])->name('scan.index');
     Route::post('/scan-makanan/generate', [MakananController::class, 'generate_makanan'])->name('scan.generate');

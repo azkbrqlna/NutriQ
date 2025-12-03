@@ -10,6 +10,7 @@ import {
     Leaf,
     Calendar,
     Sparkles,
+    LayoutDashboard,
 } from "lucide-react";
 import { Head, usePage } from "@inertiajs/react";
 
@@ -26,9 +27,14 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="max-w-[980px] w-full">
                 <div className="w-full flex justify-between items-center ">
-                    <h1 className="md:text-4xl text-3xl font-bold">
-                        Dashboard
-                    </h1>
+                    <div className="flex items-center gap-[1rem]">
+                        <div className="bg-tertiary p-[0.8rem] rounded-lg">
+                            <LayoutDashboard size={25} />
+                        </div>
+                        <h1 className="md:text-4xl text-3xl font-bold">
+                            Dashboard
+                        </h1>
+                    </div>
                     <button className="bg-tertiary hover:bg-tertiary/80 p-[0.6rem] rounded-xl flex items-center gap-[0.5rem]">
                         <Calendar size={18} />
                         <span className="md:text-lg">Hari ini</span>
@@ -40,7 +46,7 @@ export default function Dashboard() {
                 </p>
 
                 {/* Bagian Makronutrisi */}
-                <div className="mt-[2rem]">
+                <div className="mt-[1.5rem]">
                     <h2 className="md:text-2xl text-xl font-bold">
                         Makronutrisi
                     </h2>
@@ -48,7 +54,7 @@ export default function Dashboard() {
                         {/* 1. Protein */}
                         <DashboardCard
                             icon={Beef}
-                            label="Protein (g)"
+                            label="Protein"
                             makananHariIni={mkn.protein}
                             kebutuhan={kbt.protein}
                             className="lg:w-[47%]"
@@ -58,7 +64,7 @@ export default function Dashboard() {
                         {/* 2. Karbohidrat */}
                         <DashboardCard
                             icon={Wheat}
-                            label="Karbohidrat (g)"
+                            label="Karbohidrat"
                             makananHariIni={mkn.karbohidrat}
                             kebutuhan={kbt.karbohidrat}
                             className="lg:w-[47%]"
@@ -68,7 +74,7 @@ export default function Dashboard() {
                         {/* 3. Lemak */}
                         <DashboardCard
                             icon={Droplet}
-                            label="Lemak (g)"
+                            label="Lemak"
                             makananHariIni={mkn.lemak}
                             kebutuhan={kbt.lemak}
                             className="lg:w-[47%]"
@@ -78,7 +84,7 @@ export default function Dashboard() {
                         {/* 4. Kalori */}
                         <DashboardCard
                             icon={Flame}
-                            label="Kalori (Kkal)"
+                            label="Kalori"
                             makananHariIni={mkn.kalori}
                             kebutuhan={kbt.kalori}
                             className="lg:w-[47%]"
@@ -88,7 +94,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Bagian Nutrisi Tambahan */}
-                <div className="mt-[3rem] ">
+                <div className="mt-[2rem] ">
                     <h2 className="md:text-2xl text-xl font-bold">
                         Nutrisi Tambahan
                     </h2>
@@ -96,7 +102,7 @@ export default function Dashboard() {
                         {/* 5. Natrium */}
                         <DashboardCard
                             icon={Sparkles}
-                            label="Natrium (mg)"
+                            label="Natrium"
                             makananHariIni={mkn.natrium}
                             kebutuhan={kbt.natrium}
                             className="lg:w-[30%]"
@@ -106,7 +112,7 @@ export default function Dashboard() {
                         {/* 6. Serat */}
                         <DashboardCard
                             icon={Leaf}
-                            label="Serat (g)"
+                            label="Serat"
                             makananHariIni={mkn.serat}
                             kebutuhan={kbt.serat}
                             className="lg:w-[30%]"
@@ -116,7 +122,7 @@ export default function Dashboard() {
                         {/* 7. Gula */}
                         <DashboardCard
                             icon={Candy}
-                            label="Gula (g)"
+                            label="Gula"
                             makananHariIni={mkn.gula_tambahan}
                             kebutuhan={kbt.gula_tambahan}
                             className="lg:w-[30%]"

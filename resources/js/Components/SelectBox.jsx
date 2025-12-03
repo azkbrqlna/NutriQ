@@ -9,10 +9,14 @@ export default function SelectBox({ icon: Icon, label, active, onClick }) {
                 ${active ? "text-white bg-quartenary" : "bg-white"}
     `}
             >
-                <Icon size={54} />
+                <Icon size={65} />
             </button>
 
-            <span className="block text-center text-2xl font-medium mt-[1rem]">
+            <span
+                className={`block text-center text-2xl  mt-[1rem] ${
+                    active ? "text-quartenary  font-semibold" : "text-black"
+                }`}
+            >
                 {label}
             </span>
         </div>

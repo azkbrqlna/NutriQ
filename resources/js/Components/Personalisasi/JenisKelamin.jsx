@@ -16,9 +16,9 @@ export default function JenisKelamin({ setData, data }) {
 
     return (
         <div className="flex flex-col items-center pb-[5rem]">
-            <span className="text-2xl opacity-80">Pertanyaan 2/4</span>
+            <span className="text-xl opacity-80">Pertanyaan 2/4</span>
             <Title text={"Apa jenis kelamin Anda?"} className="text-center" />
-            <div className="flex md:gap-[3rem] gap-[2rem] items-center mt-[2rem] ">
+            <div className="flex md:gap-[3rem] gap-[2rem] items-center mt-[2.5rem] ">
                 <SelectBox
                     label={"Laki-laki"}
                     icon={Mars}

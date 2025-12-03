@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        return Inertia::render('User/Personalisasi');
+        return Inertia::render('Pengguna/Personalisasi');
     }
 
     public function store(Request $request, GeminiService $gemini)
@@ -44,5 +44,12 @@ class UserController extends Controller
         }
 
         return redirect()->route('dashboard')->with('success', 'Data berhasil disimpan!');
+    }
+
+    public function show_profil()
+    {
+        return Inertia::render("Pengguna/Profil", [
+            "user" => Auth::user()
+        ]);
     }
 }
