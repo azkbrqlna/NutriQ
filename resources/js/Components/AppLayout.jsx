@@ -1,5 +1,5 @@
-import { Link, useForm, usePage } from "@inertiajs/react";
-import { LayoutDashboard, ScanSearch, History, Soup } from "lucide-react";
+import { Link, router, useForm, usePage } from "@inertiajs/react";
+import { LayoutDashboard, History, Soup, ScanLine } from "lucide-react";
 
 export default function AppLayout({ children }) {
     const { url, props } = usePage();
@@ -19,7 +19,7 @@ export default function AppLayout({ children }) {
         {
             name: "Scan Makanan",
             href: "/scan",
-            icon: <ScanSearch size={25} />,
+            icon: <ScanLine size={25} />,
         },
         {
             name: "Riwayat",
@@ -42,8 +42,8 @@ export default function AppLayout({ children }) {
                 {/* Logo + Brand */}
                 <div>
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-full bg-quartenary" />
-                        <span className="text-xl font-semibold">NutriQ</span>
+                        {/* <div className="w-10 h-10 rounded-full bg-quartenary" /> */}
+                        <span className="text-2xl font-semibold">NutriQ</span>
                     </div>
 
                     {/* Menu Items */}
@@ -53,9 +53,9 @@ export default function AppLayout({ children }) {
                                 key={i}
                                 href={item.href}
                                 className={
-                                    "flex items-center text-lg gap-5 px-4 py-2 rounded-lg  transition " +
+                                    "flex items-center text-lg gap-4 px-2 py-[10px] rounded-lg transition " +
                                     (isActive(item.href)
-                                        ? "bg-tertiary"
+                                        ? "bg-tertiary shadow-md font-medium"
                                         : "hover:bg-tertiary/80")
                                 }
                             >
@@ -68,8 +68,8 @@ export default function AppLayout({ children }) {
 
                 {/* User Section */}
                 <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-quartenary flex items-center justify-center text-white font-semibold">
-                        <span className="text-lg">
+                    <div className="w-14 h-14 rounded-full bg-quartenary flex items-center justify-center text-white font-semibold">
+                        <span className="text-xl">
                             {user?.name?.slice(0, 2).toUpperCase() ?? "US"}
                         </span>
                     </div>
@@ -78,10 +78,10 @@ export default function AppLayout({ children }) {
                             {user?.name ?? "User"}
                         </p>
                         <button
-                            className="text-gray-700 hover:underline"
-                            onClick={handleLogout}
+                            className="text-gray-700 hover:underline "
+                            onClick={() => router.visit("/profil")}
                         >
-                            Keluar
+                            View profile
                         </button>
                     </div>
                 </div>

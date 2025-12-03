@@ -15,13 +15,13 @@ export default function Aktivitas({ setData, data }) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center pb-[3rem]">
-            <span className="text-2xl opacity-80">Pertanyaan 4/4</span>
+        <div className="flex flex-col items-center justify-center pb-[1rem]">
+            <span className="text-xl opacity-80">Pertanyaan 4/4</span>
             <Title
                 text={"Apa tingkat aktivitas Anda?"}
                 className="text-center"
             />
-            <div className="flex flex-col gap-[2rem] mt-[2rem]">
+            <div className="flex flex-col gap-[1.5rem] mt-[2.5rem]">
                 <div className="flex items-center gap-[3rem]">
                     {/* SelectBox 1: Sangat Rendah */}
                     <SelectBox

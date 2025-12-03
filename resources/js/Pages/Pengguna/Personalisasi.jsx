@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
 import { useForm } from "@inertiajs/react";
+import { AlertCircleIcon } from "lucide-react";
 
 import AgeQuestion from "@/Components/Personalisasi/Umur";
 import WeightHeightQuestion from "@/Components/Personalisasi/TinggiBerat";
@@ -9,6 +10,7 @@ import ActivityQuestion from "@/Components/Personalisasi/Aktivitas";
 import GenderQuestion from "@/Components/Personalisasi/JenisKelamin";
 import Title from "@/Components/Title";
 import Analisis from "@/Components/Personalisasi/Analisis";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 const contents = [
     AgeQuestion,
@@ -61,8 +63,7 @@ export default function Personalisasi() {
         }
 
         post("/personalisasi");
-        setShowModal(false)
-        // setIsLoading(true);
+        setShowModal(false);
     };
 
     return (
@@ -100,7 +101,7 @@ export default function Personalisasi() {
             {/* modal */}
             {showModal && (
                 <div className="w-full h-full fixed top-0 right-0 black-0 left-0 z-50 flex items-center justify-center bg-black/80">
-                    <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl md:p-[1.5rem] py-[1.5rem] px-[1rem] fill-secondary">
+                    <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl md:p-[1.5rem] py-[1.5rem] px-[1rem] bg-secondary">
                         <Title
                             text={"Siap memulai perjalanan sehat Anda?"}
                             className="text-center"

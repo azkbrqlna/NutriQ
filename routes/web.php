@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/personalisasi', [UserController::class, 'index'])->name('personalisasi');
     Route::post('/personalisasi', [UserController::class, 'store'])->name('personalisasi.store');
+    Route::get('/profil', [UserController::class, 'show_profil']);
 
     // Scan makanan
     Route::get('/scan', action: [MakananController::class, 'index'])->name('makanan.index');

@@ -18,7 +18,7 @@ export default function DashboardCard({
 
     return (
         <div
-            className={`w-full ${className} rounded-xl bg-white border border-gray-200 hover:border-tertiary transition p-[1.5rem] shadow-sm flex items-center justify-between`}
+            className={`w-full ${className} rounded-xl bg-white border border-gray-200 hover:border-tertiary transition p-[1.2rem] shadow-sm flex items-center justify-between`}
         >
             <div className="">
                 <div className="flex items-center gap-[0.8rem]">
@@ -27,14 +27,14 @@ export default function DashboardCard({
                     </div>
                     <span className="text-xl">{label}</span>
                 </div>
-                <h3 className="md:text-4xl text-3xl font-semibold mt-[1.5rem]">
+                <h3 className="md:text-4xl text-3xl font-semibold mt-[1.2rem]">
                     {hariIni}
                     <span className="text-lg font-normal ml-[0.5rem]">
                         /{target} {satuan}
                     </span>
                 </h3>
                 <span
-                    className={`block mt-[0.7rem] text-lg opacity-80 ${
+                    className={`block mt-[0.7rem] opacity-80 ${
                         sisa < 0 ? "text-red-600" : "text-gray-700"
                     }`}
                 >
