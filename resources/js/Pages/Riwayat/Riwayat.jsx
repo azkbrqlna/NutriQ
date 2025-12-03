@@ -178,13 +178,13 @@ export default function Riwayat({ makanans, filters }) {
                             key={index}
                             href={link.url || "#"}
                             className={`
-                                px-4 py-2 rounded-full text-sm transition
-                                ${
-                                    link.active
-                                        ? "bg-green-600 text-white shadow"
-                                        : "bg-green-100 text-black hover:bg-green-200"
-                                }
-                            `}
+                                    px-4 py-2 rounded-full text-sm transition
+                                    ${
+                                        link.active
+                                            ? "bg-green-600 text-white shadow"
+                                            : "bg-green-100 text-black hover:bg-green-200"
+                                    }
+                                `}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ))}
