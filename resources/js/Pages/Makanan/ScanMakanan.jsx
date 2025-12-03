@@ -6,13 +6,15 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import AppLayout from "@/Components/AppLayout";
+import useNotify from "@/Components/ToastNotification"; // <-- TOAST
 
 export default function ScanMakanan() {
     const [preview, setPreview] = useState(null);
     const [dragActive, setDragActive] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
 
     const timeoutRef = useRef(null);
+
+    const { notifySuccess, notifyError } = useNotify(); // <-- TOAST HOOK
 
     const { data, setData, post, processing } = useForm({
         tanggal: "",
@@ -20,17 +22,11 @@ export default function ScanMakanan() {
         image: null,
     });
 
-    // 5MB error handler
+    // ERROR 5MB → TOAST
     const triggerError = (msg) => {
-        setErrorMsg(msg);
-
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => {
-            setErrorMsg("");
-        }, 5000);
+        notifyError("Gagal", msg);
     };
 
-    // Process file (whether from input or drag-drop)
     const processFile = (file) => {
         if (!file) return;
 
@@ -68,8 +64,23 @@ export default function ScanMakanan() {
 
     const submit = (e) => {
         e.preventDefault();
+
         post(route("scan.generate"), {
             forceFormData: true,
+
+            // HANDLE ERROR DARI VALIDASI LARAVEL
+            onError: (errors) => {
+                if (errors.image) notifyError("Upload Gagal", errors.image);
+                if (errors.tanggal)
+                    notifyError("Tanggal Salah", errors.tanggal);
+                if (errors.jam) notifyError("Jam Salah", errors.jam);
+                if (errors.error) notifyError("Analisis Gagal", errors.error);
+            },
+
+            // HANDLE SUKSES
+            onSuccess: () => {
+                notifySuccess("Berhasil!", "Gambar berhasil dianalisis 🎉");
+            },
         });
     };
 
@@ -79,7 +90,6 @@ export default function ScanMakanan() {
                 <Head title="Scan Makanan" />
 
                 <div className="max-w-3xl w-full">
-                    {/* Title */}
                     <h1 className="md:text-4xl text-3xl font-bold">
                         Scan Makanan
                     </h1>
@@ -155,14 +165,7 @@ export default function ScanMakanan() {
                             </div>
                         </div>
 
-                        {/* ERROR MESSAGE */}
-                        {errorMsg && (
-                            <p className="text-red-600 font-medium text-sm animate-pulse">
-                                {errorMsg}
-                            </p>
-                        )}
-
-                        {/* UPLOAD AREA + DRAG & DROP */}
+                        {/* UPLOAD */}
                         <div
                             className={`
                                 border-2 border-dashed rounded-xl w-full min-h-[260px] 
@@ -170,7 +173,7 @@ export default function ScanMakanan() {
                                 transition-all duration-300 bg-white shadow-sm
                                 ${
                                     dragActive
-                                        ? "border-red-400 bg-red-50 scale-[1.02]"
+                                        ? "border-green-400 bg-green-50 scale-[1.02]"
                                         : "border-[#A8C48C] hover:bg-secondary/50"
                                 }
                             `}
@@ -189,14 +192,11 @@ export default function ScanMakanan() {
                             ) : (
                                 <div className="transition-all">
                                     <ImageIcon
-                                        className={`
-                                            mx-auto mb-3 h-12 w-12 
-                                            ${
-                                                dragActive
-                                                    ? "text-red-500 animate-bounce"
-                                                    : "text-gray-600"
-                                            }
-                                        `}
+                                        className={`mx-auto mb-3 h-12 w-12 ${
+                                            dragActive
+                                                ? "text-green-600 animate-bounce"
+                                                : "text-gray-600"
+                                        }`}
                                     />
                                     <p className="font-medium text-gray-800">
                                         Seret & jatuhkan gambar di sini
@@ -216,7 +216,7 @@ export default function ScanMakanan() {
                             />
                         </div>
 
-                        {/* SUBMIT BUTTON */}
+                        {/* BUTTON */}
                         <div className="flex justify-end">
                             <Button
                                 className="bg-quartenary md:w-auto w-full text-white p-[1.5rem] text-[15px] rounded-lg hover:bg-quartenary/80 mt-[1rem] font-semibold"
