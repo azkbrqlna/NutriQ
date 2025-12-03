@@ -33,7 +33,7 @@ export default function Dashboard() {
                             <LayoutDashboard size={25} />
                         </div>
                         <h1 className="md:text-4xl text-3xl font-bold">
-                        Dashboard
+                            Dashboard
                         </h1>
                     </div>
                     <button className="bg-tertiary hover:bg-tertiary/80 p-[0.6rem] rounded-xl flex items-center gap-[0.5rem] shadow-md">
@@ -42,11 +42,11 @@ export default function Dashboard() {
                     </button>
                 </div>
                 <p className="md:text-xl text-lg opacity-80 md:max-w-[65%] w-full mt-[1.5rem]">
-                    <span className="font-semibold ">
-                        Halo {user?.name ?? "Pengguna"}
+                    <span className="font-semibold mr-1">
+                        Halo {user?.name ?? "Pengguna"}! 
                     </span>
-                    ! Pantau nutrisi makro dan mikro Anda hari ini untuk
-                    mencapai target kesehatan Anda.
+                     Pantau nutrisi makro dan mikro Anda hari ini untuk mencapai
+                    target kesehatan Anda.
                 </p>
 
                 {/* Bagian Makronutrisi */}

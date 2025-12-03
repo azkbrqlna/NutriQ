@@ -47,7 +47,7 @@ export default function Profil() {
                     <div className="bg-tertiary p-[0.8rem] rounded-lg shadow-md">
                         <Pencil size={25} />
                     </div>
-                    <Title text="NutriQ" />
+                    <Title text="Edit Profil" />
                 </div>
 
                 <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1.5rem]">
@@ -57,7 +57,7 @@ export default function Profil() {
 
                 <form
                     onSubmit={handleUpdate}
-                    className="max-w-xl w-full b mt-[1.5rem] flex flex-col gap-[1.5rem]"
+                    className="max-w-xl w-full b mt-[1rem] flex flex-col gap-[1.5rem]"
                 >
                     {/* Field Nama */}
                     <div className="flex flex-col gap-[0.5rem]">

@@ -57,7 +57,7 @@ export default function ScanMakanan() {
 
                 <form
                     onSubmit={submit}
-                    className="w-full space-y-8 mt-[1.5rem]"
+                    className="w-full space-y-8 mt-[1rem]"
                     encType="multipart/form-data"
                 >
                     {/* Input Tanggal & Jam */}
