@@ -14,11 +14,13 @@ import {
 
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
-import { Search, CalendarDays } from "lucide-react";
+import { Search, CalendarDays, XCircle } from "lucide-react";
 
 export default function Riwayat({ makanans, filters }) {
     const [search, setSearch] = React.useState(filters?.search || "");
     const [tanggal, setTanggal] = React.useState(filters?.tanggal || "");
+
+    const inputTanggalRef = React.useRef(null);
 
     // SEARCH realtime
     React.useEffect(() => {
@@ -44,6 +46,15 @@ export default function Riwayat({ makanans, filters }) {
         );
     }, [tanggal]);
 
+    const resetTanggal = () => {
+        setTanggal("");
+        router.get(
+            "/riwayat",
+            { search, tanggal: "" },
+            { preserveState: true, replace: true }
+        );
+    };
+
     return (
         <AppLayout>
             <Head title="Riwayat Makanan" />
@@ -55,7 +66,7 @@ export default function Riwayat({ makanans, filters }) {
                 <div className="flex items-center justify-between mb-6">
                     {/* SEARCH */}
                     <div className="relative w-1/2">
-                        <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
                         <Input
                             placeholder="Ketikkan makanan..."
                             className="pl-10 border-green-400 bg-white"
@@ -64,27 +75,45 @@ export default function Riwayat({ makanans, filters }) {
                         />
                     </div>
 
-                    {/* DATE FILTER BUTON */}
-                    <div className="relative">
-                        {/* Invisible input date */}
-                        <input
-                            type="date"
-                            value={tanggal}
-                            onChange={(e) => setTanggal(e.target.value)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50"
-                        />
+                    {/* DATE FILTER (container clickable + reset terpisah) */}
+                    <div className="flex items-center gap-2">
+                        {/* Date Picker Box */}
+                        <div
+                            className="relative flex items-center gap-2 border border-green-400 bg-white px-4 py-2 rounded-lg cursor-pointer hover:bg-green-100 transition"
+                            onClick={() => inputTanggalRef.current.showPicker()}
+                        >
+                            <CalendarDays className="h-5 w-5 text-black" />
 
-                        <Button className="border border-green-400 bg-white text-black hover:bg-green-100 flex items-center">
-                            <CalendarDays className="h-5 w-5 mr-2" />
-                            Filter Tanggal
-                        </Button>
+                            <span className="text-black">
+                                {tanggal ? tanggal : "Filter Tanggal"}
+                            </span>
+
+                            {/* Hidden input date */}
+                            <input
+                                ref={inputTanggalRef}
+                                type="date"
+                                value={tanggal}
+                                onChange={(e) => setTanggal(e.target.value)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+
+                        {/* RESET BUTTON — terpisah */}
+                        {tanggal && (
+                            <button
+                                onClick={resetTanggal}
+                                className="p-2 rounded-lg border border-red-400 text-red-500 hover:bg-red-100 transition"
+                            >
+                                <XCircle className="h-5 w-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 {/* TABLE */}
                 <div className="rounded-xl border border-green-300 shadow-md overflow-hidden bg-white">
                     <Table>
-                        <TableHeader className="bg-green-200/70">
+                        <TableHeader className="bg-[#A6BF9D]">
                             <TableRow>
                                 <TableHead className="font-semibold text-black">
                                     Foto
@@ -144,6 +173,7 @@ export default function Riwayat({ makanans, filters }) {
                                         <TableCell className="font-medium">
                                             {item.nama}
                                         </TableCell>
+
                                         <TableCell>
                                             {item.total_kalori} kcal
                                         </TableCell>
@@ -155,7 +185,7 @@ export default function Riwayat({ makanans, filters }) {
                                             <Link
                                                 href={`/riwayat/${item.slug}`}
                                             >
-                                                <Button className="bg-green-600 text-white hover:bg-green-700">
+                                                <Button className="bg-[#6E8F5C] text-white hover:bg-[#5d7d4d]">
                                                     Detail
                                                 </Button>
                                             </Link>
@@ -171,23 +201,40 @@ export default function Riwayat({ makanans, filters }) {
                     </Table>
                 </div>
 
-                {/* PAGINATION */}
-                <div className="flex justify-center items-center gap-2 mt-6">
-                    {makanans.links.map((link, index) => (
-                        <Link
-                            key={index}
-                            href={link.url || "#"}
-                            className={`
-                                    px-4 py-2 rounded-full text-sm transition
+                {/* PAGINATION — pojok kanan */}
+                <div className="flex justify-end items-center gap-2 mt-6">
+                    {makanans.links.map((link, index) => {
+                        const isActive = link.active;
+                        const isDisabled = !link.url;
+
+                        const label = link.label.includes("Previous")
+                            ? "<"
+                            : link.label.includes("Next")
+                            ? ">"
+                            : link.label;
+
+                        return (
+                            <Link
+                                key={index}
+                                href={isDisabled ? "#" : link.url}
+                                className={`
+                                    flex items-center justify-center
+                                    w-10 h-10 rounded-lg text-sm transition-all
                                     ${
-                                        link.active
+                                        isActive
                                             ? "bg-green-600 text-white shadow"
-                                            : "bg-green-100 text-black hover:bg-green-200"
+                                            : "bg-white border border-green-300 text-black hover:bg-green-100"
+                                    }
+                                    ${
+                                        isDisabled
+                                            ? "opacity-40 cursor-not-allowed"
+                                            : ""
                                     }
                                 `}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
-                    ))}
+                                dangerouslySetInnerHTML={{ __html: label }}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         </AppLayout>

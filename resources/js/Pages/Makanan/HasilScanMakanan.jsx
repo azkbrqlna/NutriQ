@@ -1,24 +1,21 @@
 import React from "react";
 import { Head, Link } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/Components/ui/table";
 import AppLayout from "@/Components/AppLayout";
 
 export default function HasilScan({ makanan }) {
     return (
         <AppLayout>
-            <div className="min-h-screen p-10 bg-[#F1F3E0]">
+            <div className="w-full min-h-screen bg-[#F1F3E0]">
                 <Head title="Hasil Scan" />
 
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8">
+                    <Link href={route("riwayat.index")}>
+                        <Button className="bg-[#6E8F5C] text-white px-4 rounded-lg hover:bg-[#5d7d4d]">
+                            Kembali
+                        </Button>
+                    </Link>
                     <h1 className="text-3xl font-semibold">
                         Hasil Scan Makanan
                     </h1>
@@ -32,14 +29,12 @@ export default function HasilScan({ makanan }) {
 
                 {/* FOTO + WAKTU + ITEM */}
                 <div className="flex flex-col md:flex-row gap-6 mb-10">
-                    {/* Foto */}
                     <img
                         src={makanan.foto}
                         className="w-64 rounded-xl shadow object-cover"
                         alt="Foto makanan"
                     />
 
-                    {/* Detail */}
                     <div className="space-y-2 text-black">
                         <div>
                             <p className="text-sm text-gray-600">Waktu scan</p>
@@ -94,7 +89,7 @@ export default function HasilScan({ makanan }) {
                     <Nutrisi
                         label="Natrium"
                         value={makanan.total_natrium}
-                        unit="g"
+                        unit="mg"
                     />
                     <Nutrisi
                         label="Gula"
@@ -108,56 +103,88 @@ export default function HasilScan({ makanan }) {
                     Rincian nutrisi makanan
                 </h2>
 
-                <div className="bg-white rounded-xl overflow-hidden border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-gray-100">
-                                <TableHead>Item</TableHead>
-                                <TableHead className="text-right">
-                                    Kalori
-                                </TableHead>
-                                <TableHead className="text-right">P</TableHead>
-                                <TableHead className="text-right">L</TableHead>
-                                <TableHead className="text-right">K</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                <div className="space-y-6">
+                    {makanan.detail_makanans.map((d, i) => {
+                        // --- Hitung berat otomatis kalau tidak ada ---
+                        const beratOtomatis =
+                            parseFloat(d.karbohidrat || 0) +
+                            parseFloat(d.protein || 0) +
+                            parseFloat(d.lemak || 0);
 
-                        <TableBody>
-                            {makanan.detail_makanans.map((d, i) => (
-                                <TableRow key={i} className="hover:bg-gray-50">
-                                    <TableCell className="font-medium">
+                        const beratFinal = d.berat ?? beratOtomatis.toFixed(1);
+
+                        return (
+                            <div
+                                key={i}
+                                className="bg-white rounded-xl border shadow-sm p-5"
+                            >
+                                {/* HEADER */}
+                                <div className="flex justify-between items-center mb-4">
+                                    <p className="text-lg font-semibold">
                                         {d.nama}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {d.kalori}
-                                    </TableCell>
-                                    <TableCell className="text-right text-sm">
-                                        {d.protein}
-                                    </TableCell>
-                                    <TableCell className="text-right text-sm">
-                                        {d.lemak}
-                                    </TableCell>
-                                    <TableCell className="text-right text-sm">
-                                        {d.karbohidrat}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-600">
+                                        {beratFinal}g
+                                    </p>
+                                </div>
+
+                                {/* GRID NUTRISI */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                    <NutrisiItem
+                                        label="Kalori"
+                                        value={d.kalori}
+                                    />
+                                    <NutrisiItem
+                                        label="Protein (g)"
+                                        value={d.protein}
+                                    />
+                                    <NutrisiItem
+                                        label="Lemak (g)"
+                                        value={d.lemak}
+                                    />
+                                    <NutrisiItem
+                                        label="Karbo (g)"
+                                        value={d.karbohidrat}
+                                    />
+                                    <NutrisiItem
+                                        label="Natrium (mg)"
+                                        value={d.natrium}
+                                    />
+                                    <NutrisiItem
+                                        label="Serat (g)"
+                                        value={d.serat}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </AppLayout>
     );
 }
 
-/* ==== COMPONENT MINI UNTUK BOX NUTRISI ==== */
-
+/* ==== COMPONENT MINI UNTUK TOTAL NUTRISI ==== */
 function Nutrisi({ label, value, unit }) {
     return (
         <div className="flex flex-col items-center">
             <p className="text-gray-700">{label}</p>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-gray-600">{unit}</p>
+            <p className="text-2xl font-bold flex items-end gap-[2px]">
+                {value}
+                <span className="text-sm text-gray-600 font-normal">
+                    {unit}
+                </span>
+            </p>
+        </div>
+    );
+}
+
+/* ==== COMPONENT MINI RINCIAN MAKANAN ==== */
+function NutrisiItem({ label, value }) {
+    return (
+        <div className="flex flex-col bg-white border rounded-lg p-3">
+            <p className="text-xs text-gray-500">{label}</p>
+            <p className="mt-1 font-semibold text-black text-sm">{value}</p>
         </div>
     );
 }
