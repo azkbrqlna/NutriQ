@@ -23,7 +23,7 @@ export default function HasilScan({ makanan }) {
                         Hasil Scan Makanan
                     </h1>
 
-                    <Link href={route("makanan.index")}>
+                    <Link href={route("scan.index")}>
                         <Button className="bg-[#6E8F5C] text-white px-6 rounded-xl hover:bg-[#5d7d4d]">
                             Scan Lagi
                         </Button>

@@ -13,47 +13,41 @@ class MakananController extends Controller
 {
     public function index()
     {
-        // Saya tambahkan query agar list makanan muncul di frontend
-        $makanans = Makanan::with('detailMakanans')
-                    ->where('user_id', Auth::id())
-                    ->latest()
-                    ->get();
-
-        return Inertia::render('Makanan/ScanMakanan', [
-            'makanans' => $makanans
-        ]);
+        return Inertia::render('Makanan/ScanMakanan');
     }
 
     public function generate_makanan(Request $request, GeminiService $gemini)
     {
-        // 1. Validasi Gambar
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // Max 5MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'tanggal' => 'required|date',
             'jam' => 'required'
         ]);
 
-        // 2. Kirim File ke AI Service
         $file = $request->file('image');
         $hasil = $gemini->generateMakanan($file);
 
-        if (!$hasil) {
-            return back()->withErrors(['error' => 'Gagal menganalisis gambar makanan.']);
+        if (isset($hasil['error'])) {
+            $pesan = match($hasil['error']) {
+                'bukan_makanan' => 'Gambar tidak terdeteksi sebagai makanan.',
+                'api_gagal' => 'Layanan analisis tidak merespon.',
+                'json_tidak_valid' => 'Respon dari AI tidak valid.',
+                'struktur_tidak_lengkap' => 'Struktur data analisis tidak lengkap.',
+                default => 'Gagal menganalisis gambar makanan.'
+            };
+
+            return back()->withErrors(['error' => $pesan]);
         }
 
-        // 3. Simpan Gambar ke Storage (Public)
-        // Pastikan sudah run: php artisan storage:link
         $path = $file->store('makanan', 'public');
-
         $user = Auth::user();
 
-        // 4. Simpan ke Database
         $makanan = Makanan::create([
             'user_id' => $user->id,
             'nama' => $hasil['nama'],
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
-            'foto' => '/storage/' . $path, // Simpan path gambar
+            'foto' => '/storage/' . $path,
             'total_kalori' => $hasil['total']['total_kalori'],
             'total_protein' => $hasil['total']['total_protein'],
             'total_karbohidrat' => $hasil['total']['total_karbohidrat'],
@@ -63,10 +57,9 @@ class MakananController extends Controller
             'total_gula_tambahan' => $hasil['total']['total_gula_tambahan'],
         ]);
 
-        // Simpan detail
         foreach ($hasil['detail'] as $item) {
             DetailMakanan::create([
-                'makanan_id' => $makanan->id, // Perbaikan: id, bukan makanan_id
+                'makanan_id' => $makanan->id,
                 'nama' => $item['nama'],
                 'kalori' => $item['kalori'],
                 'protein' => $item['protein'],
@@ -78,16 +71,42 @@ class MakananController extends Controller
             ]);
         }
 
-       return redirect()->route('makanan.show', $makanan->id);
-
+        return redirect()->route('riwayat.show', $makanan->slug);
     }
-    public function show($id)
+
+    public function show($slug)
     {
         $userId = Auth::id();
-        $makanan = Makanan::with('detailMakanans')->where('user_id', $userId)->where('id', $id)->firstOrFail();
+        $makanan = Makanan::with('detailMakanans')
+            ->where('user_id', $userId)
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return Inertia::render('Makanan/HasilScanMakanan', [
             'makanan' => $makanan,
         ]);
     }
+
+    public function riwayat(Request $request)
+    {
+        $userId = Auth::id();
+
+        $makanans = Makanan::where('user_id', $userId)
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('nama', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->tanggal, function ($query) use ($request) {
+                $query->where('tanggal', $request->tanggal);
+            })
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('jam', 'desc')
+            ->paginate(6)
+            ->withQueryString();
+
+        return Inertia::render('Riwayat/Riwayat', [
+            'makanans' => $makanans,
+            'filters' => $request->only('search', 'tanggal'),
+        ]);
+    }
+
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama');
+            $table->string('slug')->unique();
             $table->date('tanggal');
             $table->time('jam');
             $table->string('foto');

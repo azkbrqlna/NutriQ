@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Makanan extends Model
 {
@@ -29,5 +30,16 @@ class Makanan extends Model
     public function detailMakanans()
     {
         return $this->hasMany(DetailMakanan::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($makanan) {
+            $slug = Str::slug($makanan->nama);
+            $unique = Str::random(5);
+            $makanan->slug = "{$slug}-{$unique}";
+        });
     }
 }
