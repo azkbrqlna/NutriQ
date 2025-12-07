@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { router, useForm, usePage } from "@inertiajs/react";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Title from "@/Components/Title";
+import { Label } from "@/Components/ui/label";
+import { Input } from "@/Components/ui/input";
 
 export default function Register() {
-    const [isNotFilled, setIsnotFilled] = useState(false);
+    const [isNotFilled, setIsNotFilled] = useState(false);
     const [hidePassword, setHidePassword] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
         password: "",
     });
-    const { flash } = usePage().props;
 
     const handleRegister = (e) => {
         e.preventDefault();
-        alert("mendaftarkan akun");
 
         if (!data.name || !data.email || !data.password) {
-            alert("isi semua field!");
+            setIsNotFilled(true);
             return;
         }
 
@@ -30,6 +31,15 @@ export default function Register() {
         }
         post("/register");
     };
+
+    useEffect(() => {
+        if (isNotFilled) {
+            const timer = setTimeout(() => {
+                setIsNotFilled(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [isNotFilled]);
 
     // **Class yang Diperbarui untuk Input**
     const inputWrapperClass =
@@ -41,67 +51,65 @@ export default function Register() {
     return (
         <div className="h-screen flex flex-col justify-center items-center gap-[1.5rem]">
             <div className="logo text-center">
-                <h1 className="font-bold text-4xl">NutriQ</h1>
+                <Title text="NutriQ" className="text-quartenary text-4xl"/>
                 <p className="text-lg">Mulai perjalanan sehat Anda!</p>
             </div>
             {/* Mengubah bg-secondary menjadi bg-white/bg-card jika ada di theme Anda */}
             <div className="card md:max-w-[330px] max-w-xs w-full p-[1.5rem] rounded-2xl bg-white shadow-xl">
                 <form onSubmit={handleRegister} className="flex flex-col">
                     <div className="flex flex-col gap-[0.5rem] ">
-                        <label htmlFor="" className="font-medium text-gray-700">
+                        <Label className="font-medium text-gray-700">
                             Nama
-                        </label>
+                        </Label>
                         {/* Wrapper Nama dengan gaya Shadcn */}
                         <div className={inputWrapperClass}>
                             <User className={iconClass} />
-                            <input
+                            <Input
                                 type="text"
+                                className="pl-[2.5rem] py-[1.4rem]"
                                 onChange={(e) =>
-                                    setData("name", e.target.value)
+                                    setData("nama", e.target.value)
                                 }
-                                className={inputFieldClass}
-                                placeholder="masukkan nama..."
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <label htmlFor="" className="font-medium text-gray-700">
-                            Email
-                        </label>
-                        {/* Wrapper Email dengan gaya Shadcn */}
-                        <div className={inputWrapperClass}>
-                            <Mail className={iconClass} />
-                            <input
-                                type="text"
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
-                                className={inputFieldClass}
                                 placeholder="example@gmail.com"
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <label htmlFor="" className="font-medium text-gray-700">
-                            Password
-                        </label>
-                        {/* Wrapper Password dengan gaya Shadcn */}
+                        <Label className="font-medium text-gray-700">
+                            Email
+                        </Label>
                         <div className={inputWrapperClass}>
-                            <Lock className={iconClass} />
-                            <input
+                            <Mail className={iconClass} /> {/* Ikon Mail */}
+                            <Input
+                                type="text"
+                                className="pl-[2.5rem] py-[1.4rem]"
+                                onChange={(e) =>
+                                    setData("email", e.target.value)
+                                }
+                                placeholder="example@gmail.com"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
+                        <Label className="font-medium text-gray-700">
+                            Password
+                        </Label>
+                        <div className={inputWrapperClass}>
+                            <Lock className={iconClass} /> {/* Ikon Lock */}
+                            <Input
                                 type={hidePassword ? "password" : "text"}
+                                className="pl-[2.5rem] py-[1.4rem]"
                                 onChange={(e) =>
                                     setData("password", e.target.value)
                                 }
                                 placeholder="masukkan password..."
-                                className={`${inputFieldClass} pr-12`} // pr-12 untuk memberi ruang tombol mata
                             />
                             {/* hide password button */}
                             <button
                                 onClick={() => setHidePassword(!hidePassword)}
-                                className="w-5 h-5 cursor-pointer opacity-60 absolute right-3 transition-opacity duration-200 hover:opacity-100" // right-3 agar sedikit menjauh dari border
+                                className="w-5 h-5 cursor-pointer opacity-60 absolute right-3 " // right-3 untuk posisi tombol mata
                                 type="button"
                             >
                                 {hidePassword ? (
@@ -136,12 +144,14 @@ export default function Register() {
                     </span>
                 </p>
             </div>
-            {/* {!isNotFilled && (
-                <Alert variant="destructive" className="max-w-xs w-full flex items-center justify-center fixed top-12 ">
-                    <AlertCircleIcon />
-                    <AlertTitle>Unable to process your payment.</AlertTitle>
-                </Alert>
-            )} */}
+
+            {/* Alert message */}
+            {isNotFilled && (
+                <Alert variant="error" msg="Harap isi semua field!" />
+            )}
+            {Object.keys(errors) > 0 && (
+                <Alert variant="error" msg={errors.email} />
+            )}
         </div>
     );
 }

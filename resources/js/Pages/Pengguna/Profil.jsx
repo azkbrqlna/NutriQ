@@ -14,6 +14,7 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import AppLayout from "@/Components/AppLayout";
+import Title from "@/Components/Title";
 
 export default function Profil() {
     const [preview, setPreview] = useState(null);
@@ -43,17 +44,15 @@ export default function Profil() {
             <Head title="NutriQ | Profil" />
             <div className="max-w-3xl w-full ">
                 <div className="flex items-center gap-[1rem]">
-                    <div className="bg-tertiary p-[0.8rem] rounded-lg">
+                    <div className="bg-tertiary p-[0.8rem] rounded-lg shadow-md">
                         <Pencil size={25} />
                     </div>
-                    <h1 className="md:text-4xl text-3xl font-bold">
-                        Edit Profil
-                    </h1>
+                    <Title text="NutriQ" />
                 </div>
 
-                <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1rem]">
-                    Perbarui data diri Anda agar perhitungan target nutrisi
-                    tetap akurat.
+                <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1.5rem]">
+                    Perbarui data diri Anda agar kami dapat memastikan
+                    perhitungan target nutrisi harian tetap akurat dan relevan
                 </p>
 
                 <form

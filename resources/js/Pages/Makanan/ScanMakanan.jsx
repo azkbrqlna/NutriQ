@@ -89,18 +89,20 @@ export default function ScanMakanan() {
 
     return (
         <AppLayout>
-            <div className="w-full min-h-screen">
-                <Head title="Scan Makanan" />
+            <Head title="Scan Makanan" />
+            <div className="max-w-3xl w-full">
+                {/* Title */}
+                <div className="flex items-center gap-[1rem]">
+                    <div className="bg-tertiary p-[0.8rem] rounded-lg shadow-md">
+                        <ScanLine size={25} />
+                    </div>
+                    <Title text="Scan Makaanan"/>
+                </div>
 
-                <div className="w-full">
-                    <h1 className="md:text-4xl text-3xl font-bold">
-                        Scan Makanan
-                    </h1>
-
-                    <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] mt-[1rem]">
-                        Unggah gambar makanan Anda dan kami akan menganalisis
-                        nutrisi secara otomatis!
-                    </p>
+                <p className="md:text-xl text-lg opacity-80 md:max-w-[80%] w-full mt-[1.5rem]">
+                    Unggah gambar makanan Anda dan kami akan menganalisis
+                    nutrisi yang ada pada makanan secara otomatis!
+                </p>
 
                     <form
                         onSubmit={submit}
@@ -147,47 +149,29 @@ export default function ScanMakanan() {
                             </div>
                         </div>
 
-                        {/* UPLOAD */}
-                        <div
-                            className={`
-                                border-2 border-dashed rounded-xl w-full min-h-[260px] 
-                                flex flex-col justify-center items-center text-center cursor-pointer 
-                                transition-all duration-300 bg-white shadow-sm
-                                ${
-                                    dragActive
-                                        ? "border-green-400 bg-green-50 scale-[1.02]"
-                                        : "border-[#A8C48C] hover:bg-secondary/50"
-                                }
-                            `}
-                            onClick={() =>
-                                document.getElementById("foodImage").click()
-                            }
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                        >
-                            {preview ? (
-                                <img
-                                    src={preview}
-                                    className="max-h-56 rounded-lg object-cover shadow-md"
-                                />
-                            ) : (
-                                <div className="transition-all">
-                                    <ImageIcon
-                                        className={`mx-auto mb-3 h-12 w-12 ${
-                                            dragActive
-                                                ? "text-green-600 animate-bounce"
-                                                : "text-gray-600"
-                                        }`}
-                                    />
-                                    <p className="font-medium text-gray-800">
-                                        Seret & jatuhkan gambar di sini
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        atau klik untuk memilih (max 5MB)
-                                    </p>
-                                </div>
-                            )}
+                    {/* Upload Area */}
+                    <div
+                        className="border-2 border-dashed border-tertiary bg-white rounded-xl w-full min-h-[300px] flex flex-col justify-center items-center text-center cursor-pointer hover:bg-secondary/50 transition"
+                        onClick={() =>
+                            document.getElementById("foodImage").click()
+                        }
+                    >
+                        {preview ? (
+                            <img
+                                src={preview}
+                                className="max-h-56 rounded-lg object-cover shadow"
+                            />
+                        ) : (
+                            <div>
+                                <ImageIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
+                                <p className="font-medium text-gray-800 ">
+                                    Seret atau klik untuk memasukkan gambar
+                                </p>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    Support JPG, PNG, WebP (max 5MB)
+                                </p>
+                            </div>
+                        )}
 
                             <Input
                                 id="foodImage"

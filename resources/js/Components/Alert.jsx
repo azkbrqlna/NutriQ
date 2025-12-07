@@ -1,16 +1,19 @@
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, CircleCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Alert({ msg, variant }) {
     const [shouldShow, setShouldShow] = useState(false);
 
     let variantClasses = ""
-    let icon = ""
+    let Icon = ""
 
     if (variant == "success") {
-        variantClasses = "text-red-500" 
+        variantClasses = "text-quartenary" 
+        Icon = CircleCheck
     } else if (variant == "error") {
-        variantClasses = "text-quartenary"
+        variantClasses = "text-red-500"
+        Icon = CircleAlert;
+        
     }
 
     useEffect(() => {
@@ -19,12 +22,12 @@ export default function Alert({ msg, variant }) {
     return (
         <div
             className={`fixed top-10 flex items-center gap-[1rem] bg-white p-[0.7rem] rounded-xl
-            shadow-md  transition ease-in-out duration-200  ${
+            shadow-md ${variantClasses} transition ease-in-out duration-200  ${
                 shouldShow ? "opacity-100" : "opacity-0"
             }`}
         >
-            <icon />
-            <p>{msg}</p>
+            <Icon size={25} />
+            <p className="font-medium">{msg}</p>
         </div>
     );
 }

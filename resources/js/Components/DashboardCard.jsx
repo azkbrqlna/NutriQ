@@ -1,4 +1,5 @@
 import CircularProgress from "./CircularProgress";
+import { Card } from "./ui/card";
 
 export default function DashboardCard({
     icon: Icon,
@@ -17,10 +18,10 @@ export default function DashboardCard({
     const persentase = target > 0 ? Math.round((hariIni / target) * 100) : 0;
 
     return (
-        <div
-            className={`w-full ${className} rounded-xl bg-white border border-gray-200 hover:border-tertiary transition p-[1.2rem] shadow-sm flex items-center justify-between`}
+        <Card
+            className={`w-full ${className} bg-white transition p-[1.2rem] flex items-center justify-between `}
         >
-            <div className="">
+            <div>
                 <div className="flex items-center gap-[0.8rem]">
                     <div className="bg-tertiary rounded-xl p-[0.6rem]">
                         <Icon size={24} />
@@ -49,6 +50,6 @@ export default function DashboardCard({
                 textSize="text-2xl"
                 className="w-[100px] h-[100px] md:w-[100px] md:h-[100px]"
             />
-        </div>
+        </Card>
     );
 }

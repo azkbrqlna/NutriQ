@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { ChevronRight, X } from "lucide-react";
-import { ChevronLeft } from "lucide-react";
+import { CircleChevronLeft, X, CircleChevronRight } from "lucide-react";
 import { useForm } from "@inertiajs/react";
-import { AlertCircleIcon } from "lucide-react";
 
 import AgeQuestion from "@/Components/Personalisasi/Umur";
 import WeightHeightQuestion from "@/Components/Personalisasi/TinggiBerat";
@@ -10,7 +8,7 @@ import ActivityQuestion from "@/Components/Personalisasi/Aktivitas";
 import GenderQuestion from "@/Components/Personalisasi/JenisKelamin";
 import Title from "@/Components/Title";
 import Analisis from "@/Components/Personalisasi/Analisis";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/Components/ui/button";
 
 const contents = [
     AgeQuestion,
@@ -77,20 +75,20 @@ export default function Personalisasi() {
 
                     <div className="max-w-6xl w-full fixed flex justify-between bottom-12 md:px-0 px-[2rem]">
                         <button
-                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.5rem] hover:opacity-70"
                             onClick={moveToPrevQuestion}
                             disabled={questionNumber == 0}
                         >
-                            <ChevronLeft />
+                            <CircleChevronLeft size={20}/>
                             <span className="font-medium ">Kembali</span>
                         </button>
 
                         <button
-                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.2rem] hover:opacity-70"
+                            className=" fill-tertiary p-[1rem] rounded-xl flex items-center gap-[0.5rem] hover:opacity-70"
                             onClick={moveToNextQuestion}
                         >
                             <span className="font-medium">Lanjut</span>
-                            <ChevronRight />
+                            <CircleChevronRight size={20}/>
                         </button>
                     </div>
                 </div>
@@ -101,25 +99,25 @@ export default function Personalisasi() {
             {/* modal */}
             {showModal && (
                 <div className="w-full h-full fixed top-0 right-0 black-0 left-0 z-50 flex items-center justify-center bg-black/80">
-                    <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl md:p-[1.5rem] py-[1.5rem] px-[1rem] bg-secondary">
+                    <div className="card relative md:max-w-md max-w-xs w-full flex flex-col gap-[0.5rem] items-center justify-center rounded-xl py-[1.2rem] px-[1rem] bg-secondary">
                         <Title
                             text={"Siap memulai perjalanan sehat Anda?"}
-                            className="text-center"
+                            className="text-center max-w-[80%] w-full"
                         />
                         <p className="text-center opacity-80 text-xl">
                             Anda masih bisa mengubah data-data ini kapan saja
                             melalui menu Profil.
                         </p>
-                        <button
-                            className="fill-quartenary p-[1rem] rounded-lg font-semibold text-white mt-[1rem] hover:bg-quartenary/80"
+                        <Button
+                            className="bg-quartenary py-[1.6rem] px-[1.3rem] text-lg rounded-lg font-semibold text-white mt-[1rem] hover:bg-quartenary/80"
                             onClick={handleSubmit}
                         >
                             Hitung kebutuhan saya
-                        </button>
+                        </Button>
 
                         {/* close button */}
                         <button
-                            className="rounded-full p-[0.8rem] bg-primary absolute right-[-15px] top-[-15px] cursor-pointer"
+                            className="rounded-full p-[0.7rem] bg-primary absolute right-[-15px] top-[-15px] cursor-pointer"
                             onClick={() => setShowModal(false)}
                         >
                             <X size={30} />

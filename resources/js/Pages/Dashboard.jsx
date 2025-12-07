@@ -17,6 +17,7 @@ import { Head, usePage } from "@inertiajs/react";
 export default function Dashboard() {
     // Langsung destructure data dari props
     const { user, kebutuhan, makananHariIni, tanggal } = usePage().props;
+    console.log(tanggal);
 
     // Pastikan objek ada agar tidak error saat mengakses properti
     const kbt = kebutuhan || {};
@@ -25,24 +26,27 @@ export default function Dashboard() {
     return (
         <AppLayout>
             <Head title="Dashboard" />
-            <div className="max-w-[980px] w-full">
+            <div className="max-w-[960px] w-full">
                 <div className="w-full flex justify-between items-center ">
                     <div className="flex items-center gap-[1rem]">
-                        <div className="bg-tertiary p-[0.8rem] rounded-lg">
+                        <div className="bg-tertiary p-[0.8rem] rounded-lg shadow-md">
                             <LayoutDashboard size={25} />
                         </div>
                         <h1 className="md:text-4xl text-3xl font-bold">
-                            Dashboard
+                        Dashboard
                         </h1>
                     </div>
-                    <button className="bg-tertiary hover:bg-tertiary/80 p-[0.6rem] rounded-xl flex items-center gap-[0.5rem]">
+                    <button className="bg-tertiary hover:bg-tertiary/80 p-[0.6rem] rounded-xl flex items-center gap-[0.5rem] shadow-md">
                         <Calendar size={18} />
                         <span className="md:text-lg">Hari ini</span>
                     </button>
                 </div>
-                <p className="md:text-xl text-lg opacity-80 md:max-w-[65%] w-full mt-[1rem]">
-                    Halo {user?.name ?? "Pengguna"}! Pantau nutrisi makro dan
-                    mikro Anda hari ini untuk mencapai target kesehatan Anda.
+                <p className="md:text-xl text-lg opacity-80 md:max-w-[65%] w-full mt-[1.5rem]">
+                    <span className="font-semibold ">
+                        Halo {user?.name ?? "Pengguna"}
+                    </span>
+                    ! Pantau nutrisi makro dan mikro Anda hari ini untuk
+                    mencapai target kesehatan Anda.
                 </p>
 
                 {/* Bagian Makronutrisi */}
@@ -57,7 +61,7 @@ export default function Dashboard() {
                             label="Protein"
                             makananHariIni={mkn.protein}
                             kebutuhan={kbt.protein}
-                            className="lg:w-[47%]"
+                            className="lg:w-[48%]"
                             satuan="g"
                         />
 
@@ -67,7 +71,7 @@ export default function Dashboard() {
                             label="Karbohidrat"
                             makananHariIni={mkn.karbohidrat}
                             kebutuhan={kbt.karbohidrat}
-                            className="lg:w-[47%]"
+                            className="lg:w-[48%]"
                             satuan="g"
                         />
 
@@ -77,7 +81,7 @@ export default function Dashboard() {
                             label="Lemak"
                             makananHariIni={mkn.lemak}
                             kebutuhan={kbt.lemak}
-                            className="lg:w-[47%]"
+                            className="lg:w-[48%]"
                             satuan="g"
                         />
 
@@ -87,7 +91,7 @@ export default function Dashboard() {
                             label="Kalori"
                             makananHariIni={mkn.kalori}
                             kebutuhan={kbt.kalori}
-                            className="lg:w-[47%]"
+                            className="lg:w-[48%]"
                             satuan="Kkal"
                         />
                     </div>
@@ -105,7 +109,7 @@ export default function Dashboard() {
                             label="Natrium"
                             makananHariIni={mkn.natrium}
                             kebutuhan={kbt.natrium}
-                            className="lg:w-[30%]"
+                            className="lg:w-[31%]"
                             satuan="mg"
                         />
 
@@ -115,7 +119,7 @@ export default function Dashboard() {
                             label="Serat"
                             makananHariIni={mkn.serat}
                             kebutuhan={kbt.serat}
-                            className="lg:w-[30%]"
+                            className="lg:w-[31%]"
                             satuan="g"
                         />
 
@@ -125,7 +129,7 @@ export default function Dashboard() {
                             label="Gula"
                             makananHariIni={mkn.gula_tambahan}
                             kebutuhan={kbt.gula_tambahan}
-                            className="lg:w-[30%]"
+                            className="lg:w-[31%]"
                             satuan="g"
                         />
                     </div>
