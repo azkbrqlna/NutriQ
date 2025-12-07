@@ -17,7 +17,6 @@ export default function Login() {
     });
 
     const handleLogin = (e) => {
-        // Fixed typo: handeLogin -> handleLogin
         e.preventDefault();
 
         if (!data.email || !data.password) {
@@ -37,29 +36,41 @@ export default function Login() {
         }
     }, [isNotFilled]);
 
+    // --- STYLE CLASSES YANG DIPERBARUI ---
+    // Menggunakan border #D5E1C3 dan focus ring #7A9E7E (Sage)
     const inputWrapperClass =
-        "relative flex items-center bg-white rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:ring-offset-0 transition-all duration-200";
-    const iconClass = "w-5 h-5 ml-3 text-gray-400 absolute";
+        "relative flex items-center bg-white rounded-xl border border-[#D5E1C3] focus-within:border-[#7A9E7E] focus-within:ring-2 focus-within:ring-[#7A9E7E]/20 focus-within:ring-offset-0 transition-all duration-200";
+
+    // Icon warna muted sage
+    const iconClass = "w-5 h-5 ml-3 text-[#5C6F5C] absolute";
 
     return (
-        <div className="h-screen flex flex-col justify-center items-center gap-[1.5rem]">
+        // Background Cream Terang (#F7F9F0)
+        <div className="min-h-screen flex flex-col justify-center items-center gap-[1.5rem] bg-[#F7F9F0] text-[#2C3A2C] font-sans p-4">
             <div className="logo text-center">
-                <Title text="NutriQ" className="text-quartenary text-4xl" />
-                <p className="text-lg">Lanjutkan perjalanan sehat Anda!</p>
+                {/* Menggunakan warna Dark Green */}
+                <Title
+                    text="NutriQ"
+                    className="text-[#2C3A2C] text-4xl font-bold tracking-tight"
+                />
+                <p className="text-lg text-[#5C6F5C] mt-2">
+                    Lanjutkan perjalanan sehat Anda!
+                </p>
             </div>
 
-            <div className="card md:max-w-[330px] max-w-xs w-full p-[1.5rem] rounded-2xl bg-white shadow-lg">
+            {/* Card Putih dengan Shadow Halus */}
+            <div className="card md:max-w-[380px] max-w-xs w-full p-8 rounded-2xl bg-white shadow-xl shadow-[#7A9E7E]/10 border border-[#D5E1C3]">
                 <form onSubmit={handleLogin} className="flex flex-col">
                     {/* Input Email */}
                     <div className="flex flex-col gap-[0.5rem]">
-                        <Label className="font-medium text-gray-700">
+                        <Label className="font-semibold text-[#2C3A2C]">
                             Email
                         </Label>
                         <div className={inputWrapperClass}>
                             <Mail className={iconClass} />
                             <Input
                                 type="email"
-                                className="pl-[2.5rem] py-[1.4rem] bg-transparent border-none focus-visible:ring-0"
+                                className="pl-[2.5rem] py-6 bg-transparent border-none focus-visible:ring-0 text-[#2C3A2C] placeholder:text-[#9CA3AF]"
                                 value={data.email}
                                 onChange={(e) =>
                                     setData("email", e.target.value)
@@ -68,22 +79,22 @@ export default function Login() {
                             />
                         </div>
                         {errors.email && (
-                            <span className="text-red-500 text-xs">
+                            <span className="text-red-500 text-xs mt-1">
                                 {errors.email}
                             </span>
                         )}
                     </div>
 
                     {/* Input Password */}
-                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <Label className="font-medium text-gray-700">
+                    <div className="flex flex-col gap-[0.5rem] mt-5">
+                        <Label className="font-semibold text-[#2C3A2C]">
                             Password
                         </Label>
                         <div className={inputWrapperClass}>
                             <Lock className={iconClass} />
                             <Input
                                 type={hidePassword ? "password" : "text"}
-                                className="pl-[2.5rem] py-[1.4rem] bg-transparent border-none focus-visible:ring-0"
+                                className="pl-[2.5rem] py-6 bg-transparent border-none focus-visible:ring-0 text-[#2C3A2C] placeholder:text-[#9CA3AF]"
                                 value={data.password}
                                 onChange={(e) =>
                                     setData("password", e.target.value)
@@ -92,7 +103,7 @@ export default function Login() {
                             />
                             <button
                                 onClick={() => setHidePassword(!hidePassword)}
-                                className="w-5 h-5 cursor-pointer opacity-60 absolute right-3 "
+                                className="w-5 h-5 cursor-pointer text-[#5C6F5C] hover:text-[#2C3A2C] absolute right-3 transition-colors"
                                 type="button"
                             >
                                 {hidePassword ? (
@@ -103,7 +114,7 @@ export default function Login() {
                             </button>
                         </div>
                         {errors.password && (
-                            <span className="text-red-500 text-xs">
+                            <span className="text-red-500 text-xs mt-1">
                                 {errors.password}
                             </span>
                         )}
@@ -111,21 +122,22 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className={`mt-[2rem] bg-quartenary text-white p-[0.6rem] rounded-lg font-semibold hover:bg-quartenary/80 flex items-center justify-center transition-colors duration-200`}
+                        // Tombol Sage Green (#7A9E7E) dengan Hover lebih gelap
+                        className={`mt-8 bg-[#7A9E7E] text-white py-3 rounded-xl font-bold hover:bg-[#5C6F5C] hover:shadow-lg hover:shadow-[#7A9E7E]/20 flex items-center justify-center transition-all duration-200 active:scale-95`}
                         disabled={processing}
                     >
                         {!processing ? (
                             "Login"
                         ) : (
-                            <Spinner className="w-7 h-7 text-white" />
+                            <Spinner className="w-6 h-6 text-white" />
                         )}
                     </button>
                 </form>
 
-                <p className="text-center mt-[1rem] ">
+                <p className="text-center mt-6 text-[#5C6F5C] text-sm">
                     Belum punya akun?
                     <span
-                        className="text-quartenary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
+                        className="text-[#7A9E7E] font-bold hover:underline cursor-pointer ml-1 hover:text-[#2C3A2C] transition-colors"
                         onClick={() => router.visit("/register")}
                     >
                         Register
@@ -134,7 +146,9 @@ export default function Login() {
             </div>
 
             {isNotFilled && (
-                <Alert variant="error" msg="Harap isi semua field!" />
+                <div className="fixed top-10 z-50">
+                    <Alert variant="error" msg="Harap isi semua field!" />
+                </div>
             )}
         </div>
     );

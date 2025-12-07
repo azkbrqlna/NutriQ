@@ -1,19 +1,24 @@
+import { useState } from "react"; // 1. Import useState
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import {
     LayoutDashboard,
     History,
     Soup,
-    ScanLine,
     ScanSearch,
     LogOut,
+    Menu, // 2. Import icon Menu (Hamburger)
+    X, // 3. Import icon X (Close)
 } from "lucide-react";
-
-import { Toaster } from "sonner"; // <-- ini yang bener
+import { Toaster } from "sonner";
+import AvocadoIcon from "./AvocadoIcon";
 
 export default function AppLayout({ children }) {
     const { url, props } = usePage();
     const user = props.auth?.user;
     const { post } = useForm();
+
+    // 4. State untuk kontrol sidebar mobile
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleLogout = () => {
         post("/logout");
@@ -23,93 +28,141 @@ export default function AppLayout({ children }) {
         {
             name: "Dashboard",
             href: "/dashboard",
-            icon: <LayoutDashboard size={25} />,
+            icon: <LayoutDashboard size={22} />,
         },
         {
             name: "Scan Makanan",
             href: "/scan-makanan",
-            icon: <ScanSearch size={25} />,
+            icon: <ScanSearch size={22} />,
         },
-        {
-            name: "Riwayat",
-            href: "/riwayat",
-            icon: <History size={25} />,
-        },
-        {
-            name: "Rekomendasi",
-            href: "/rekomendasi",
-            icon: <Soup size={25} />,
-        },
+        { name: "Riwayat", href: "/riwayat", icon: <History size={22} /> },
+        { name: "Rekomendasi", href: "/rekomendasi", icon: <Soup size={22} /> },
     ];
 
-    const isActive = (path) => {
-        const cleanUrl = url.split("?")[0];
-        return cleanUrl === path;
-    };
+    const isActive = (path) => url.startsWith(path);
 
     return (
         <>
-            {/* TOAST */}
-            <Toaster richColors closeButton />
+            <Toaster richColors closeButton position="top-center" />
 
-            <div className="min-h-screen flex bg-[#F1F3E0]">
-                {/* SIDEBAR */}
-                <aside className="lg:max-w-[300px] max-w-[270px] fixed top-0 left-0 bottom-0 w-full p-6 md:flex hidden flex-col justify-between bg-[#D2DCB6] shadow-lg">
+            <div className="min-h-screen flex flex-col md:flex-row bg-[#F7F9F0] text-[#2C3A2C] font-sans">
+                {/* --- MOBILE HEADER (Hanya muncul di layar kecil) --- */}
+                <div className="md:hidden bg-[#E9EFDB] p-4 flex items-center justify-between border-b border-[#D5E1C3] sticky top-0 z-40">
+                    <div className="flex items-center gap-2">
+                        <div className="bg-[#7A9E7E] rounded-lg flex items-center justify-center w-8 h-8 text-white">
+                            <AvocadoIcon className="w-5 h-5" />
+                        </div>
+                        <span className="font-bold text-lg text-[#2C3A2C]">
+                            NutriQ
+                        </span>
+                    </div>
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="p-2 hover:bg-[#D5E1C3] rounded-lg transition"
+                    >
+                        <Menu size={24} />
+                    </button>
+                </div>
+
+                {/* --- OVERLAY (Background Gelap saat menu terbuka di HP) --- */}
+                {isSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )}
+
+                {/* --- SIDEBAR --- */}
+                <aside
+                    className={`
+                        fixed md:fixed inset-y-0 left-0 z-50
+                        w-[280px] bg-[#E9EFDB] border-r border-[#D5E1C3] p-6
+                        flex flex-col justify-between
+                        transition-transform duration-300 ease-in-out
+                        ${
+                            isSidebarOpen
+                                ? "translate-x-0"
+                                : "-translate-x-full"
+                        } 
+                        md:translate-x-0
+                    `}
+                >
                     <div>
-                        <div className="flex items-center gap-3 mb-8">
-                            <span className="text-2xl font-semibold">
-                                NutriQ
-                            </span>
+                        {/* Header Sidebar & Close Button for Mobile */}
+                        <div className="flex items-center justify-between mb-10 px-2">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-[#7A9E7E] rounded-lg flex items-center justify-center w-10 h-10 text-white">
+                                    <AvocadoIcon className="w-6 h-6" />
+                                </div>
+                                <span className="text-2xl font-bold tracking-tight text-[#2C3A2C]">
+                                    NutriQ
+                                </span>
+                            </div>
+
+                            {/* Tombol Close (X) hanya di Mobile */}
+                            <button
+                                onClick={() => setIsSidebarOpen(false)}
+                                className="md:hidden text-[#5C6F5C] hover:text-red-500 transition"
+                            >
+                                <X size={24} />
+                            </button>
                         </div>
 
-                        <nav className="space-y-5">
-                            {menus.map((item, i) => (
-                                <Link
-                                    key={i}
-                                    href={item.href}
-                                    className={
-                                        "flex items-center text-lg gap-4 px-2 py-[10px] rounded-lg transition " +
-                                        (isActive(item.href)
-                                            ? "bg-tertiary shadow-md font-medium"
-                                            : "hover:bg-tertiary/80")
-                                    }
-                                >
-                                    {item.icon}
-                                    {item.name}
-                                </Link>
-                            ))}
+                        <nav className="space-y-2">
+                            {menus.map((item, i) => {
+                                const active = isActive(item.href);
+                                return (
+                                    <Link
+                                        key={i}
+                                        href={item.href}
+                                        // Tutup sidebar saat menu diklik di mobile
+                                        onClick={() => setIsSidebarOpen(false)}
+                                        className={`flex items-center text-sm font-medium gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                                            active
+                                                ? "bg-[#7A9E7E] text-white shadow-md shadow-[#7A9E7E]/20"
+                                                : "text-[#5C6F5C] hover:bg-[#D5E1C3] hover:text-[#2C3A2C]"
+                                        }`}
+                                    >
+                                        {item.icon}
+                                        {item.name}
+                                    </Link>
+                                );
+                            })}
                         </nav>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-14 h-14 rounded-full bg-quartenary flex items-center justify-center text-white font-semibold">
-                                <span className="text-xl">
+                    {/* Profile Section */}
+                    <div className="border-t border-[#D5E1C3] pt-6">
+                        <div className="flex items-center justify-between gap-3 mb-4 ">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#7A9E7E] flex items-center justify-center text-white font-bold text-sm">
                                     {user?.name?.slice(0, 2).toUpperCase() ??
                                         "US"}
-                                </span>
+                                </div>
+                                <div className="overflow-hidden w-24">
+                                    <p className="font-semibold text-sm truncate text-[#2C3A2C]">
+                                        {user?.name ?? "User"}
+                                    </p>
+                                    <button
+                                        onClick={() => router.visit("/profil")}
+                                        className="text-xs text-[#5C6F5C] hover:text-[#7A9E7E] transition text-left"
+                                    >
+                                        Lihat Profil
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <p className="font-semibold text-lg">
-                                    {user?.name ?? "User"}
-                                </p>
-                                <button
-                                    className="text-gray-700 hover:underline "
-                                    onClick={() => router.visit("/profil")}
-                                >
-                                    View profile
-                                </button>
-                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 text-sm font-medium text-red-600 hover:bg-red-50 px-2 py-2 rounded-lg transition"
+                            >
+                                <LogOut size={18} />
+                            </button>
                         </div>
-
-                        <LogOut
-                            className="text-red-500 cursor-pointer hover:text-red-500/50"
-                            onClick={handleLogout}
-                        />
                     </div>
                 </aside>
 
-                <main className="flex-1 lg:ml-[19rem] sm:ml-[17rem] ml-0 md:px-[4rem] py-[3rem] p-[2rem] w-full">
+                {/* --- MAIN CONTENT --- */}
+                <main className="flex-1 md:ml-[280px] p-4 md:p-10 w-full overflow-x-hidden">
                     {children}
                 </main>
             </div>

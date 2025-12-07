@@ -1,5 +1,4 @@
-import CircularProgress from "./CircularProgress";
-import { Card } from "./ui/card";
+import { Card } from "./ui/card"; // Asumsi path shadcn card
 
 export default function DashboardCard({
     icon: Icon,
@@ -14,42 +13,59 @@ export default function DashboardCard({
 
     // Menghitung sisa nutrisi
     const sisa = target - hariIni;
-    // Menghitung persentase (mencegah pembagian dengan nol)
-    const persentase = target > 0 ? Math.round((hariIni / target) * 100) : 0;
+
+    // Menghitung persentase (max 100% untuk visual bar, kecuali over)
+    const rawPersentase = target > 0 ? (hariIni / target) * 100 : 0;
+    const persentaseVisual = Math.min(rawPersentase, 100);
+
+    // Logic Warna Status
+    const isOver = sisa < 0;
+    const barColor = isOver ? "bg-red-500" : "bg-[#7A9E7E]"; // Moss Green atau Merah
+    const textColor = isOver ? "text-red-600" : "text-[#5C6F5C]";
 
     return (
         <Card
-            className={`w-full ${className} bg-white transition p-[1.2rem] flex items-center justify-between `}
+            className={`w-full bg-white border border-[#D5E1C3] shadow-sm hover:shadow-md transition-all duration-300 p-6 rounded-xl flex flex-col justify-between h-full ${className}`}
         >
-            <div>
-                <div className="flex items-center gap-[0.8rem]">
-                    <div className="bg-tertiary rounded-xl p-[0.6rem]">
-                        <Icon size={24} />
-                    </div>
-                    <span className="text-xl">{label}</span>
-                </div>
-                <h3 className="md:text-4xl text-3xl font-semibold mt-[1.2rem]">
-                    {hariIni}
-                    <span className="text-lg font-normal ml-[0.5rem]">
-                        /{target} {satuan}
+            {/* Header Card */}
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-col">
+                    <span className="text-sm font-medium text-[#5C6F5C] uppercase tracking-wide">
+                        {label}
                     </span>
-                </h3>
-                <span
-                    className={`block mt-[0.7rem] opacity-80 ${
-                        sisa < 0 ? "text-red-600" : "text-gray-700"
-                    }`}
-                >
-                    {sisa >= 0
-                        ? `Tersisa ${sisa} ${satuan}`
-                        : `Melebihi ${Math.abs(sisa)} ${satuan}`}
-                </span>
+                    <h3 className="text-3xl font-bold text-[#2C3A2C] mt-1">
+                        {hariIni}
+                        <span className="text-sm font-medium text-[#8D9F8D] ml-1">
+                            / {target} {satuan}
+                        </span>
+                    </h3>
+                </div>
+                <div className="bg-[#F2F5E8] p-3 rounded-xl text-[#7A9E7E]">
+                    <Icon size={22} />
+                </div>
             </div>
-            <CircularProgress
-                stroke={10}
-                progress={persentase}
-                textSize="text-2xl"
-                className="w-[100px] h-[100px] md:w-[100px] md:h-[100px]"
-            />
+
+            {/* Linear Progress Section */}
+            <div className="w-full">
+                <div className="flex justify-between text-xs mb-2 font-medium">
+                    <span className={textColor}>
+                        {isOver
+                            ? `Melebihi ${Math.abs(sisa)} ${satuan}`
+                            : `Tersisa ${sisa} ${satuan}`}
+                    </span>
+                    <span className="text-[#2C3A2C]">
+                        {Math.round(rawPersentase)}%
+                    </span>
+                </div>
+
+                {/* Progress Bar Container */}
+                <div className="h-3 w-full bg-[#E9EFDB] rounded-full overflow-hidden">
+                    <div
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
+                        style={{ width: `${persentaseVisual}%` }}
+                    ></div>
+                </div>
+            </div>
         </Card>
     );
 }

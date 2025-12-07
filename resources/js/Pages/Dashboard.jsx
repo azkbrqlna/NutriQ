@@ -1,6 +1,6 @@
 import React from "react";
 import AppLayout from "@/Components/AppLayout";
-import DashboardCard from "@/Components/DashboardCard"; // Pastikan path benar
+import DashboardCard from "@/Components/DashboardCard";
 import {
     Beef,
     Candy,
@@ -13,127 +13,113 @@ import {
     LayoutDashboard,
 } from "lucide-react";
 import { Head, usePage } from "@inertiajs/react";
+import EventsChart from "@/Components/EventsChart";
 
 export default function Dashboard() {
-    // Langsung destructure data dari props
-    const { user, kebutuhan, makananHariIni, tanggal } = usePage().props;
-    console.log(tanggal);
+    const { user, kebutuhan, makananHariIni } = usePage().props;
 
-    // Pastikan objek ada agar tidak error saat mengakses properti
     const kbt = kebutuhan || {};
     const mkn = makananHariIni || {};
 
     return (
         <AppLayout>
             <Head title="Dashboard" />
-            <div className="max-w-[960px] w-full">
-                <div className="w-full flex justify-between items-center ">
-                    <div className="flex items-center gap-[1rem]">
-                        <div className="bg-tertiary p-[0.8rem] rounded-lg shadow-md">
-                            <LayoutDashboard size={25} />
-                        </div>
-                        <h1 className="md:text-4xl text-3xl font-bold">
-                            Dashboard
-                        </h1>
-                    </div>
-                    <button className="bg-white hover:bg-white/80 py-[0.6rem] px-[1rem] rounded-full flex items-center gap-[0.5rem] shadow-md">
-                        <Calendar size={18} />
-                        <span>12 Desember 2025</span>
-                    </button>
-                </div>
-                <p className="md:text-xl text-lg opacity-80 md:max-w-[65%] w-full mt-[1.5rem]">
-                    <span className="font-semibold mr-1">
-                        Halo {user?.name ?? "Pengguna"}! 
-                    </span>
-                     Pantau nutrisi makro dan mikro Anda hari ini untuk mencapai
-                    target kesehatan Anda.
-                </p>
 
-                {/* Bagian Makronutrisi */}
-                <div className="mt-[1.5rem]">
-                    <h2 className="md:text-2xl text-xl font-bold">
+            <div className="max-w-7xl mx-auto w-full">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="bg-[#E9EFDB] p-2 rounded-lg text-[#7A9E7E]">
+                                <LayoutDashboard size={24} />
+                            </div>
+                            <h1 className="text-3xl font-bold text-[#2C3A2C] tracking-tight">
+                                Dashboard
+                            </h1>
+                        </div>
+                        <p className="text-[#5C6F5C] md:text-lg">
+                            Halo,{" "}
+                            <span className="font-bold text-[#2C3A2C]">
+                                {user?.name ?? "Pengguna"}
+                            </span>
+                            ! Pantau progres nutrisimu hari ini.
+                        </p>
+                    </div>
+
+                    <div className="self-start md:self-center bg-white border border-[#D5E1C3] py-2 px-4 rounded-full flex items-center gap-2 text-sm font-medium text-[#5C6F5C] shadow-sm">
+                        <Calendar size={16} />
+                        <span>12 Desember 2025</span>
+                    </div>
+                </div>
+
+                {/* BAGIAN MAKRONUTRISI */}
+                <div className="mb-10">
+                    <h2 className="text-xl font-bold text-[#2C3A2C] mb-6 flex items-center gap-2">
+                        <span className="w-1 h-6 bg-[#7A9E7E] rounded-full block"></span>
                         Makronutrisi
                     </h2>
-                    <div className="container flex md:gap-[2rem] gap-[1.5rem] flex-wrap justify-between items-center mt-[1.5rem]">
-                        {/* 1. Protein */}
-                        <DashboardCard
-                            icon={Beef}
-                            label="Protein"
-                            makananHariIni={mkn.protein}
-                            kebutuhan={kbt.protein}
-                            className="lg:w-[48%]"
-                            satuan="g"
-                        />
 
-                        {/* 2. Karbohidrat */}
-                        <DashboardCard
-                            icon={Wheat}
-                            label="Karbohidrat"
-                            makananHariIni={mkn.karbohidrat}
-                            kebutuhan={kbt.karbohidrat}
-                            className="lg:w-[48%]"
-                            satuan="g"
-                        />
-
-                        {/* 3. Lemak */}
-                        <DashboardCard
-                            icon={Droplet}
-                            label="Lemak"
-                            makananHariIni={mkn.lemak}
-                            kebutuhan={kbt.lemak}
-                            className="lg:w-[48%]"
-                            satuan="g"
-                        />
-
-                        {/* 4. Kalori */}
+                    {/* Menggunakan Grid untuk Responsif yang Lebih Baik */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <DashboardCard
                             icon={Flame}
                             label="Kalori"
                             makananHariIni={mkn.kalori}
                             kebutuhan={kbt.kalori}
-                            className="lg:w-[48%]"
                             satuan="Kkal"
+                        />
+                        <DashboardCard
+                            icon={Beef}
+                            label="Protein"
+                            makananHariIni={mkn.protein}
+                            kebutuhan={kbt.protein}
+                        />
+                        <DashboardCard
+                            icon={Wheat}
+                            label="Karbohidrat"
+                            makananHariIni={mkn.karbohidrat}
+                            kebutuhan={kbt.karbohidrat}
+                        />
+                        <DashboardCard
+                            icon={Droplet}
+                            label="Lemak"
+                            makananHariIni={mkn.lemak}
+                            kebutuhan={kbt.lemak}
                         />
                     </div>
                 </div>
 
-                {/* Bagian Nutrisi Tambahan */}
-                <div className="mt-[2rem] ">
-                    <h2 className="md:text-2xl text-xl font-bold">
+                {/* BAGIAN NUTRISI TAMBAHAN */}
+                <div>
+                    <h2 className="text-xl font-bold text-[#2C3A2C] mb-6 flex items-center gap-2">
+                        <span className="w-1 h-6 bg-[#A6C19D] rounded-full block"></span>
                         Nutrisi Tambahan
                     </h2>
-                    <div className="container flex md:gap-[1.5rem] gap-[1.5rem] flex-wrap justify-between items-center mt-[1.5rem]">
-                        {/* 5. Natrium */}
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <DashboardCard
                             icon={Sparkles}
                             label="Natrium"
                             makananHariIni={mkn.natrium}
                             kebutuhan={kbt.natrium}
-                            className="lg:w-[31%]"
                             satuan="mg"
                         />
-
-                        {/* 6. Serat */}
                         <DashboardCard
                             icon={Leaf}
                             label="Serat"
                             makananHariIni={mkn.serat}
                             kebutuhan={kbt.serat}
-                            className="lg:w-[31%]"
-                            satuan="g"
                         />
-
-                        {/* 7. Gula */}
                         <DashboardCard
                             icon={Candy}
                             label="Gula"
                             makananHariIni={mkn.gula_tambahan}
                             kebutuhan={kbt.gula_tambahan}
-                            className="lg:w-[31%]"
-                            satuan="g"
                         />
                     </div>
                 </div>
+
+                <EventsChart />
             </div>
         </AppLayout>
     );

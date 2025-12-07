@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import { router, useForm } from "@inertiajs/react";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Spinner } from "@/Components/ui/spinner";
-import Alert from "@/Components/Alert"; // Pastikan path import sama dengan Login
+import Alert from "@/Components/Alert";
 import Title from "@/Components/Title";
 import { Label } from "@/Components/ui/label";
 import { Input } from "@/Components/ui/input";
 
 export default function Register() {
     const [isNotFilled, setIsNotFilled] = useState(false);
-    const [hidePassword, setHidePassword] = useState(true); // Default true agar aman
+    const [hidePassword, setHidePassword] = useState(true);
 
-    // Setup form sesuai dengan kebutuhan Controller Laravel
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
@@ -21,14 +20,14 @@ export default function Register() {
     const handleRegister = (e) => {
         e.preventDefault();
 
-        // Validasi frontend sederhana
         if (!data.name || !data.email || !data.password) {
             setIsNotFilled(true);
             return;
         }
 
         if (data.password.length < 8) {
-            alert("Password minimal 8 karakter!"); // Bisa diganti Alert UI jika mau
+            // Sebaiknya gunakan Alert UI daripada window.alert, tapi ini ok untuk sementara
+            alert("Password minimal 8 karakter!");
             return;
         }
 
@@ -39,59 +38,65 @@ export default function Register() {
         if (isNotFilled) {
             const timer = setTimeout(() => {
                 setIsNotFilled(false);
-            }, 1500); // Diperlama sedikit agar user sempat baca
+            }, 1500);
             return () => clearTimeout(timer);
         }
     }, [isNotFilled]);
 
-    // **Style Class (Konsisten dengan Login)**
+    // --- STYLE CLASSES (Konsisten dengan Login) ---
     const inputWrapperClass =
-        "relative flex items-center bg-white rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:ring-offset-0 transition-all duration-200";
-    const iconClass = "w-5 h-5 ml-3 text-gray-400 absolute";
+        "relative flex items-center bg-white rounded-xl border border-[#D5E1C3] focus-within:border-[#7A9E7E] focus-within:ring-2 focus-within:ring-[#7A9E7E]/20 focus-within:ring-offset-0 transition-all duration-200";
+    const iconClass = "w-5 h-5 ml-3 text-[#5C6F5C] absolute";
 
     return (
-        <div className="h-screen flex flex-col justify-center items-center gap-[1.5rem]">
+        // Background Cream Terang
+        <div className="min-h-screen flex flex-col justify-center items-center gap-[1.5rem] bg-[#F7F9F0] text-[#2C3A2C] font-sans p-4">
             <div className="logo text-center">
-                <Title text="NutriQ" className="text-quartenary text-4xl" />
-                <p className="text-lg">Mulai perjalanan sehat Anda!</p>
+                <Title
+                    text="NutriQ"
+                    className="text-[#2C3A2C] text-4xl font-bold tracking-tight"
+                />
+                <p className="text-lg text-[#5C6F5C] mt-2">
+                    Mulai perjalanan sehat Anda!
+                </p>
             </div>
 
-            <div className="card md:max-w-[330px] max-w-xs w-full p-[1.5rem] rounded-2xl bg-white shadow-lg">
+            <div className="card md:max-w-[380px] max-w-xs w-full p-8 rounded-2xl bg-white shadow-xl shadow-[#7A9E7E]/10 border border-[#D5E1C3]">
                 <form onSubmit={handleRegister} className="flex flex-col">
                     {/* Input Nama */}
                     <div className="flex flex-col gap-[0.5rem]">
-                        <Label className="font-medium text-gray-700">
+                        <Label className="font-semibold text-[#2C3A2C]">
                             Nama
                         </Label>
                         <div className={inputWrapperClass}>
                             <User className={iconClass} />
                             <Input
                                 type="text"
-                                className="pl-[2.5rem] py-[1.4rem] bg-transparent border-none focus-visible:ring-0"
+                                className="pl-[2.5rem] py-6 bg-transparent border-none focus-visible:ring-0 text-[#2C3A2C] placeholder:text-[#9CA3AF]"
                                 value={data.name}
                                 onChange={(e) =>
                                     setData("name", e.target.value)
-                                } // Perbaikan: "name" bukan "nama"
+                                }
                                 placeholder="Nama Lengkap"
                             />
                         </div>
                         {errors.name && (
-                            <span className="text-red-500 text-xs">
+                            <span className="text-red-500 text-xs mt-1">
                                 {errors.name}
                             </span>
                         )}
                     </div>
 
                     {/* Input Email */}
-                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <Label className="font-medium text-gray-700">
+                    <div className="flex flex-col gap-[0.5rem] mt-5">
+                        <Label className="font-semibold text-[#2C3A2C]">
                             Email
                         </Label>
                         <div className={inputWrapperClass}>
                             <Mail className={iconClass} />
                             <Input
                                 type="email"
-                                className="pl-[2.5rem] py-[1.4rem] bg-transparent border-none focus-visible:ring-0"
+                                className="pl-[2.5rem] py-6 bg-transparent border-none focus-visible:ring-0 text-[#2C3A2C] placeholder:text-[#9CA3AF]"
                                 value={data.email}
                                 onChange={(e) =>
                                     setData("email", e.target.value)
@@ -100,22 +105,22 @@ export default function Register() {
                             />
                         </div>
                         {errors.email && (
-                            <span className="text-red-500 text-xs">
+                            <span className="text-red-500 text-xs mt-1">
                                 {errors.email}
                             </span>
                         )}
                     </div>
 
                     {/* Input Password */}
-                    <div className="flex flex-col gap-[0.5rem] mt-[1rem]">
-                        <Label className="font-medium text-gray-700">
+                    <div className="flex flex-col gap-[0.5rem] mt-5">
+                        <Label className="font-semibold text-[#2C3A2C]">
                             Password
                         </Label>
                         <div className={inputWrapperClass}>
                             <Lock className={iconClass} />
                             <Input
                                 type={hidePassword ? "password" : "text"}
-                                className="pl-[2.5rem] py-[1.4rem] bg-transparent border-none focus-visible:ring-0"
+                                className="pl-[2.5rem] py-6 bg-transparent border-none focus-visible:ring-0 text-[#2C3A2C] placeholder:text-[#9CA3AF]"
                                 value={data.password}
                                 onChange={(e) =>
                                     setData("password", e.target.value)
@@ -124,7 +129,7 @@ export default function Register() {
                             />
                             <button
                                 onClick={() => setHidePassword(!hidePassword)}
-                                className="w-5 h-5 cursor-pointer opacity-60 absolute right-3"
+                                className="w-5 h-5 cursor-pointer text-[#5C6F5C] hover:text-[#2C3A2C] absolute right-3 transition-colors"
                                 type="button"
                             >
                                 {hidePassword ? (
@@ -135,7 +140,7 @@ export default function Register() {
                             </button>
                         </div>
                         {errors.password && (
-                            <span className="text-red-500 text-xs">
+                            <span className="text-red-500 text-xs mt-1">
                                 {errors.password}
                             </span>
                         )}
@@ -144,21 +149,21 @@ export default function Register() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className={`mt-[2rem] bg-quartenary text-white p-[0.6rem] rounded-lg font-semibold hover:bg-quartenary/80 flex items-center justify-center transition-colors duration-200`}
+                        className={`mt-8 bg-[#7A9E7E] text-white py-3 rounded-xl font-bold hover:bg-[#5C6F5C] hover:shadow-lg hover:shadow-[#7A9E7E]/20 flex items-center justify-center transition-all duration-200 active:scale-95`}
                         disabled={processing}
                     >
                         {!processing ? (
                             "Register"
                         ) : (
-                            <Spinner className="w-7 h-7 text-white" />
+                            <Spinner className="w-6 h-6 text-white" />
                         )}
                     </button>
                 </form>
 
-                <p className="text-center mt-[1rem]">
+                <p className="text-center mt-6 text-[#5C6F5C] text-sm">
                     Sudah punya akun?
                     <span
-                        className="text-quartenary font-semibold hover:underline cursor-pointer ml-[0.2rem]"
+                        className="text-[#7A9E7E] font-bold hover:underline cursor-pointer ml-1 hover:text-[#2C3A2C] transition-colors"
                         onClick={() => router.visit("/login")}
                     >
                         Login
@@ -166,13 +171,18 @@ export default function Register() {
                 </p>
             </div>
 
-            {/* Global Alert */}
+            {/* Global Alerts */}
             {isNotFilled && (
-                <Alert variant="error" msg="Harap isi semua field!" />
+                <div className="fixed top-10 z-50">
+                    <Alert variant="error" msg="Harap isi semua field!" />
+                </div>
             )}
 
-            {/* Menampilkan error general jika ada */}
-            {errors.error && <Alert variant="error" msg={errors.error} />}
+            {errors.error && (
+                <div className="fixed top-24 z-50">
+                    <Alert variant="error" msg={errors.error} />
+                </div>
+            )}
         </div>
     );
 }
