@@ -21,17 +21,17 @@ import useNotify from "@/Components/ToastNotification"; // Asumsi Anda punya ini
 
 export default function Profil() {
     // Mengambil data pengguna dari props (jika ada data awal)
-    const { pengguna } = usePage().props;
-    console.log(pengguna);
+    const { user } = usePage().props;
+    console.log(user);
 
     const { notifySuccess, notifyError } = useNotify();
 
     const { data, setData, put, processing, errors } = useForm({
-        nama: pengguna.name || "",
-        tinggi: pengguna.tinggi || "",
-        berat: pengguna.berat || "",
-        jenis_kelamin: pengguna.jenis_kelamin || "",
-        umur: pengguna.umur || "",
+        nama: user?.name || "",
+        tinggi: user?.tinggi || "",
+        berat: user?.berat || "",
+        jenis_kelamin: user?.jenis_kelamin || "",
+        umur: user?.umur || "",
     });
 
     const handleUpdate = (e) => {
@@ -89,7 +89,7 @@ export default function Profil() {
                                         type="text"
                                         className={inputClass}
                                         placeholder="Masukkan nama"
-                                        value={data.nama}
+                                        value={data?.nama}
                                         onChange={(e) =>
                                             setData("nama", e.target.value)
                                         }
@@ -114,7 +114,7 @@ export default function Profil() {
                                             type="number"
                                             className={inputClass}
                                             placeholder="Contoh: 170"
-                                            value={data.tinggi}
+                                            value={data?.tinggi}
                                             onChange={(e) =>
                                                 setData(
                                                     "tinggi",
@@ -141,7 +141,7 @@ export default function Profil() {
                                             type="number"
                                             className={inputClass}
                                             placeholder="Contoh: 60"
-                                            value={data.berat}
+                                            value={data?.berat}
                                             onChange={(e) =>
                                                 setData("berat", e.target.value)
                                             }
@@ -167,7 +167,7 @@ export default function Profil() {
                                             type="number"
                                             className={inputClass}
                                             placeholder="Contoh: 25"
-                                            value={data.umur}
+                                            value={data?.umur}
                                             onChange={(e) =>
                                                 setData("umur", e.target.value)
                                             }
@@ -189,7 +189,7 @@ export default function Profil() {
                                         <MarsStroke className={iconClass} />
                                         <select
                                             className={`flex h-12 w-full rounded-md border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 ${inputClass} appearance-none`}
-                                            value={data.jenis_kelamin}
+                                            value={data?.jenis_kelamin}
                                             onChange={(e) =>
                                                 setData(
                                                     "jenis_kelamin",
