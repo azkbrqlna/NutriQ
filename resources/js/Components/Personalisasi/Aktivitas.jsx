@@ -1,87 +1,79 @@
-import { useState } from "react"; // 1. Import useState
-import { Mars } from "lucide-react";
+import { useState } from "react";
+import {
+    Armchair, // Sangat rendah (Sofa)
+    PersonStanding, // Ringan (Berdiri/Jalan santai)
+    Bike, // Sedang (Olahraga ringan)
+    Dumbbell, // Berat (Gym/Lari)
+    Trophy, // Ekstra Berat (Atlet)
+} from "lucide-react";
 import Title from "../Title";
 import SelectBox from "../SelectBox";
 
 
 export default function Aktivitas({ setData, data }) {
-    // 2. State untuk melacak opsi yang saat ini dipilih
-    const [selectedAktivitas, setSelectedAktivitas] = useState(null);
+    const [selectedAktivitas, setSelectedAktivitas] = useState(
+        data.aktivitas || null
+    );
 
-    // 3. Fungsi untuk menangani klik tombol
     const handleAktivitasSelect = (aktivitas) => {
-        setSelectedAktivitas(aktivitas); // Perbarui state aktif
-        setData("aktivitas", aktivitas); // Perbarui data formulir
+        setSelectedAktivitas(aktivitas);
+        setData("aktivitas", aktivitas);
     };
 
+    const activityOptions = [
+        {
+            value: "Sangat rendah",
+            icon: Armchair,
+            desc: "Jarang berolahraga, banyak duduk",
+        },
+        {
+            value: "Rendah",
+            icon: PersonStanding,
+            desc: "Olahraga 1-3 hari/minggu",
+        },
+        {
+            value: "Sedang",
+            icon: Bike,
+            desc: "Olahraga 3-5 hari/minggu",
+        },
+        {
+            value: "Berat",
+            icon: Dumbbell,
+            desc: "Olahraga 6-7 hari/minggu",
+        },
+        {
+            value: "Ekstra berat",
+            icon: Trophy,
+            desc: "Latihan fisik sangat berat/atlet",
+        },
+    ];
+
     return (
-        <div className="flex flex-col items-center justify-center pb-[1rem]">
-            <span className="text-xl opacity-80">Pertanyaan 4/4</span>
+        <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            {/* Icon Visual */}
+
             <Title
-                text={"Apa tingkat aktivitas Anda?"}
-                className="text-center"
+                text="Seberapa aktif Anda sehari-hari?"
+                className="text-3xl md:text-4xl font-bold text-center text-[#2C3A2C] mb-4 mt-8"
             />
-            <div className="flex flex-col gap-[1.5rem] mt-[2.5rem]">
-                <div className="flex items-center gap-[3rem]">
-                    {/* SelectBox 1: Sangat Rendah */}
-                    <SelectBox
-                        label={"Sangat rendah"}
-                        icon={Mars}
-                        // 4. Tambahkan prop 'active' untuk menentukan styling
-                        active={
-                            selectedAktivitas === "Sangat rendah" ||
-                            data.aktivitas === "Sangat rendah"
-                        }
-                        // 5. Ubah onClick untuk memanggil handler baru
-                        onClick={() => handleAktivitasSelect("Sangat rendah")}
-                    />
 
-                    {/* SelectBox 2: Ringan */}
-                    <SelectBox
-                        label={"Ringan"}
-                        icon={Mars}
-                        active={
-                            selectedAktivitas === "Ringan" ||
-                            data.aktivitas === "Ringan"
-                        }
-                        onClick={() => handleAktivitasSelect("Ringan")}
-                    />
-
-                    {/* SelectBox 3: Sedang */}
-                    <SelectBox
-                        label={"Sedang"}
-                        icon={Mars}
-                        active={
-                            selectedAktivitas === "Sedang" ||
-                            data.aktivitas === "Sedang"
-                        }
-                        onClick={() => handleAktivitasSelect("Sedang")}
-                    />
-                </div>
-
-                <div className="flex justify-center items-center gap-[3rem]">
-                    {/* SelectBox 4: Berat */}
-                    <SelectBox
-                        label={"Berat"}
-                        icon={Mars}
-                        active={
-                            selectedAktivitas === "Berat" ||
-                            data.aktivitas === "Berat"
-                        }
-                        onClick={() => handleAktivitasSelect("Berat")}
-                    />
-
-                    {/* SelectBox 5: Ekstra Berat */}
-                    <SelectBox
-                        label={"Ekstra berat"}
-                        icon={Mars}
-                        active={
-                            selectedAktivitas === "Ekstra berat" ||
-                            data.aktivitas === "Ekstra berat"
-                        }
-                        onClick={() => handleAktivitasSelect("Ekstra berat")}
-                    />
-                </div>
+            {/* Grid Layout untuk Opsi */}
+            <div className="flex flex-wrap justify-center gap-6 w-full max-w-5xl px-4 mt-8">
+                {activityOptions.map((option, index) => (
+                    <div
+                        key={option.value}
+                        className="w-full sm:w-[45%] lg:w-[30%]"
+                    >
+                        <SelectBox
+                            label={option.value}
+                            desc={option.desc}
+                            icon={option.icon}
+                            active={selectedAktivitas === option.value}
+                            onClick={() => handleAktivitasSelect(option.value)}
+                            iconSize={28}
+                        />
+                    </div>
+                ))}
             </div>
         </div>
     );
