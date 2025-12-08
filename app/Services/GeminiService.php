@@ -281,4 +281,104 @@ class GeminiService
 
         return $json;
     }
+
+    public function rekomendasiMakanan($budget, $kebutuhan, $sudahDimakan)
+    {
+        $sisaKalori = max(0, $kebutuhan->kalori - ($sudahDimakan->kalori ?? 0));
+        $sisaProtein = max(0, $kebutuhan->protein - ($sudahDimakan->protein ?? 0));
+        $sisaKarbo = max(0, $kebutuhan->karbohidrat - ($sudahDimakan->karbohidrat ?? 0));
+        $sisaLemak = max(0, $kebutuhan->lemak - ($sudahDimakan->lemak ?? 0));
+        $sisaSerat = max(0, $kebutuhan->serat - ($sudahDimakan->serat ?? 0));
+        $sisaNatrium = max(0, $kebutuhan->natrium - ($sudahDimakan->natrium ?? 0));
+        $sisaGula = max(0, $kebutuhan->gula_tambahan - ($sudahDimakan->gula_tambahan ?? 0));
+
+        $sisaKalori = number_format($sisaKalori, 0, '', '');
+        $sisaProtein = number_format($sisaProtein, 0, '', '');
+        
+        $prompt = "
+            Bertindaklah sebagai Ahli Gizi dan Pencari Kuliner Lokal Indonesia.
+            
+            TUGAS:
+            Berikan 3 opsi rekomendasi MENU MAKANAN (Meal) yang bisa dibeli di warung/restoran/pedagang kaki lima.
+            
+            CONSTRAINT (BATASAN MUTLAK):
+            1. BUDGET: Maksimal Rp {$budget} per porsi.
+            2. JENIS: HANYA MAKANAN PADAT (Lauk/Nasi/Sayur). DILARANG KERAS merekomendasikan MINUMAN (Jus, Susu, Boba, Kopi, dll).
+            3. KONTEKS: Makanan harus umum ditemukan di Indonesia.
+            
+            KONDISI USER SAAT INI (KEKURANGAN NUTRISI):
+            User masih membutuhkan asupan berikut untuk mencapai target harian:
+            - Kalori: butuh {$sisaKalori} kkal
+            - Protein: butuh {$sisaProtein} gram
+            - Karbohidrat: butuh {$sisaKarbo} gram
+            - Lemak: butuh {$sisaLemak} gram
+            - Serat: butuh {$sisaSerat} gram
+            - Natrium: butuh {$sisaNatrium} mg
+            - Gula Tambahan: butuh {$sisaGula} gram
+
+            INSTRUKSI PEMILIHAN MENU:
+            - Jika user butuh banyak protein, sarankan makanan tinggi protein (misal: Dada Ayam, Ikan, Telur).
+            - Jika sisa kalori sedikit tapi budget besar, cari makanan rendah kalori tapi mahal/berkualitas.
+            - Jika budget rendah, cari makanan rakyat yang bergizi (misal: Pecel, Warteg, Gado-gado).
+            
+            FORMAT OUTPUT JSON (Wajib Valid JSON Array):
+            [
+                {
+                    \"nama_menu\": \"Nama Makanan Spesifik (misal: Nasi Padang Ayam Pop)\",
+                    \"estimasi_harga\": (number, dalam Rupiah),
+                    \"alasan_rekomendasi\": \"Penjelasan singkat kenapa ini cocok dengan sisa nutrisi & budget\",
+                    \"kandungan_gizi\": {
+                        \"kalori\": (number),
+                        \"protein\": (number),
+                        \"karbohidrat\": (number),
+                        \"lemak\": (number)
+                        \"serat\": (number),
+                        \"natrium\": (number),
+                        \"gula_tambahan\": (number)
+                    },
+                    \"keyword_pencarian\": \"Kata kunci untuk Google Maps (misal: Nasi Padang Ayam Pop Terdekat)\"
+                }
+            ]
+        ";
+
+        $body = [
+            "contents" => [
+                ["parts" => [["text" => $prompt]]]
+            ],
+            "generationConfig" => [
+                "temperature" => 0.4,
+                "topK" => 32,
+                "topP" => 1,
+                "maxOutputTokens" => 2000,
+            ]
+        ];
+
+        $response = $this->requestWithFallback($body);
+
+        if (!$response) return ['error' => 'api_gagal'];
+
+        $data = $response->json();
+        $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+        if (!$text) return ['error' => 'respon_kosong'];
+
+        // Bersihkan markdown json
+        $text = preg_replace('/^```json\s*|\s*```$/', '', $text);
+        
+        // Parse JSON
+        preg_match('/\[(?:[^\[\]]|(?R))*\]/', $text, $match);
+        
+        if (!isset($match[0])) return ['error' => 'json_tidak_valid'];
+        
+        $rekomendasi = json_decode($match[0], true);
+
+        if (!$rekomendasi) return ['error' => 'gagal_parse_json'];
+
+        foreach ($rekomendasi as &$item) {  
+            $query = urlencode($item['keyword_pencarian']);
+            $item['maps_url'] = "https://www.google.com/maps/search/?api=1&query={$query}";
+        }
+
+        return $rekomendasi;
+    }
 }

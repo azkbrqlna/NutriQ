@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MakananController;
+use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,4 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/riwayat', [MakananController::class, 'riwayat'])->name('riwayat.index');
     Route::get('/riwayat/{slug}', [MakananController::class, 'show'])->name('riwayat.show');
+
+    Route::get('/rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
+    Route::post('/rekomendasi/generate', [RekomendasiController::class, 'generate'])->name('rekomendasi.generate');
 });
