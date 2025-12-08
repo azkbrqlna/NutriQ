@@ -5,7 +5,6 @@ import AppLayout from "@/Components/AppLayout";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -14,51 +13,47 @@ import {
 
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
-import {
-    Search,
-    CalendarDays,
-    XCircle,
-    ChevronLeft,
-    ChevronRight,
-    Eye,
-} from "lucide-react";
+import { Search, XCircle, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+
+// Import komponen DatePickerDropdown
+import { DatePickerDropdown } from "@/Components/ui/date-picker-dropdown";
 
 export default function Riwayat({ makanans, filters }) {
     const [search, setSearch] = React.useState(filters?.search || "");
-    const [tanggal, setTanggal] = React.useState(filters?.tanggal || "");
+    // State tanggal sekarang menyimpan objek Date
+    const [dateValue, setDateValue] = React.useState(
+        filters?.tanggal ? new Date(filters.tanggal) : null
+    );
 
-    const inputTanggalRef = React.useRef(null);
+    // Fungsi untuk mengubah tanggal dan melakukan filter
+    const handleDateChange = (date) => {
+        const dateString = date ? date.toISOString().split("T")[0] : "";
+        setDateValue(date);
+
+        router.get(
+            "/riwayat",
+            { search, tanggal: dateString },
+            { preserveState: true, replace: true }
+        );
+    };
 
     // SEARCH realtime
     React.useEffect(() => {
         const timeout = setTimeout(() => {
+            // Konversi dateValue menjadi string YYYY-MM-DD
+            const tanggalString = dateValue
+                ? dateValue.toISOString().split("T")[0]
+                : "";
             router.get(
                 "/riwayat",
-                { search, tanggal },
+                { search, tanggal: tanggalString },
                 { preserveState: true, replace: true }
             );
         }, 400);
         return () => clearTimeout(timeout);
     }, [search]);
 
-    // FILTER TANGGAL realtime
-    React.useEffect(() => {
-        if (!tanggal) return;
-        router.get(
-            "/riwayat",
-            { search, tanggal },
-            { preserveState: true, replace: true }
-        );
-    }, [tanggal]);
-
-    const resetTanggal = () => {
-        setTanggal("");
-        router.get(
-            "/riwayat",
-            { search, tanggal: "" },
-            { preserveState: true, replace: true }
-        );
-    };
+    // Hapus FILTER TANGGAL realtime lama, karena DatePickerDropdown akan memanggil handleDateChange
 
     return (
         <AppLayout>
@@ -77,7 +72,7 @@ export default function Riwayat({ makanans, filters }) {
                 </div>
 
                 {/* Search & Filter Toolbar */}
-                <div className="bg-white p-4 rounded-xl border border-[#D5E1C3] shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="bg-white p-2 rounded-xl border border-[#D5E1C3] shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     {/* SEARCH */}
                     <div className="relative w-full md:w-1/3">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5C6F5C]" />
@@ -89,34 +84,18 @@ export default function Riwayat({ makanans, filters }) {
                         />
                     </div>
 
-                    {/* DATE FILTER */}
+                    {/* DATE FILTER MENGGUNAKAN DatePickerDropdown */}
                     <div className="flex items-center gap-2 w-full md:w-auto">
-                        <div
-                            className="relative flex items-center gap-2 border border-[#D5E1C3] bg-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#F2F5E8] hover:border-[#7A9E7E] transition w-full md:w-auto group"
-                            onClick={() => inputTanggalRef.current.showPicker()}
-                        >
-                            <CalendarDays className="h-4 w-4 text-[#5C6F5C] group-hover:text-[#4A624E]" />
-                            <span className="text-sm font-medium text-[#2C3A2C]">
-                                {tanggal
-                                    ? new Date(tanggal).toLocaleDateString(
-                                          "id-ID",
-                                          { dateStyle: "medium" }
-                                      )
-                                    : "Filter Tanggal"}
-                            </span>
-
-                            <input
-                                ref={inputTanggalRef}
-                                type="date"
-                                value={tanggal}
-                                onChange={(e) => setTanggal(e.target.value)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        <div className="w-full md:w-[250px]">
+                            <DatePickerDropdown
+                                value={dateValue}
+                                onChange={handleDateChange} // Gunakan handler baru
                             />
                         </div>
 
-                        {tanggal && (
+                        {dateValue && (
                             <button
-                                onClick={resetTanggal}
+                                onClick={() => handleDateChange(null)} // Panggil handleDateChange(null) untuk menghapus filter
                                 className="p-2 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition"
                                 title="Hapus Filter Tanggal"
                             >
@@ -146,10 +125,10 @@ export default function Riwayat({ makanans, filters }) {
                                 <TableHead className="font-bold text-[#2C3A2C]">
                                     Kalori
                                 </TableHead>
-                             
-                                <TableHead className="text-right font-bold text-[#2C3A2C]">
-                                    Aksi
+                                <TableHead className="font-bold text-[#2C3A2C]">
+                                    Protein
                                 </TableHead>
+                                <TableHead className="text-left font-bold text-[#2C3A2C]"></TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -184,7 +163,7 @@ export default function Riwayat({ makanans, filters }) {
                                         className="hover:bg-[#F9FAEF] transition-colors border-b border-[#F2F5E8]"
                                     >
                                         <TableCell>
-                                            <div className="h-12 w-12 rounded-lg overflow-hidden border border-[#D5E1C3]">
+                                            <div className="h-16 w-16 rounded-lg overflow-hidden border border-[#D5E1C3]">
                                                 <img
                                                     src={item.foto}
                                                     alt={item.nama}
@@ -217,7 +196,7 @@ export default function Riwayat({ makanans, filters }) {
                                             >
                                                 <Button
                                                     size="sm"
-                                                    className="bg-[#7A9E7E] hover:bg-[#4A624E] text-white shadow-sm transition-all"
+                                                    className="bg-[#7A9E7E] hover:bg-[#4A624E] text-white shadow-sm transition-all "
                                                 >
                                                     <Eye
                                                         size={16}
