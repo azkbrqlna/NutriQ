@@ -28,7 +28,7 @@ class MakananController extends Controller
         $hasil = $gemini->generateMakanan($file);
 
         if (isset($hasil['error'])) {
-            $pesan = match($hasil['error']) {
+            $pesan = match ($hasil['error']) {
                 'bukan_makanan' => 'Gambar tidak terdeteksi sebagai makanan.',
                 'api_gagal' => 'Layanan analisis tidak merespon.',
                 'json_tidak_valid' => 'Respon dari AI tidak valid.',
@@ -81,7 +81,6 @@ class MakananController extends Controller
             ->where('user_id', $userId)
             ->where('slug', $slug)
             ->firstOrFail();
-
         return Inertia::render('Makanan/HasilScanMakanan', [
             'makanan' => $makanan,
         ]);
@@ -109,4 +108,7 @@ class MakananController extends Controller
         ]);
     }
 
+    public function show_rekomendasi() {
+        return Inertia::render("Makanan/Rekomendasi");
+    }
 }
