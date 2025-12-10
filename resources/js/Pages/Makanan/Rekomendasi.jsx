@@ -55,17 +55,14 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     {/* --- HEADER SECTION --- */}
                     <div className="text-center max-w-2xl mx-auto mb-10">
-                        <div className="inline-flex items-center justify-center p-3 bg-[#E9EFDB] rounded-full mb-4">
-                            <ChefHat className="text-[#4A624E]" size={32} />
-                        </div>
                         <h1 className="text-3xl md:text-4xl font-bold text-[#2C3A2C] mb-3 tracking-tight">
-                            Asisten Kuliner Pribadi
+                            Rekomendasi Makanan
                         </h1>
                         <p className="text-[#5C6F5C] leading-relaxed">
-                            Nothy akan mencarikan menu yang pas dengan{" "}
+                            AI kami akan mencarikan menu yang pas dengan{" "}
                             <br className="hidden md:block" />
                             <b>sisa kebutuhan nutrisi</b> harian dan{" "}
-                            <b>budget</b> Yang Mulia.
+                            <b>budget</b> Anda
                         </p>
                     </div>
 
