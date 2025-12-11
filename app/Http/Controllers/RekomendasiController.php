@@ -72,13 +72,24 @@ class RekomendasiController extends Controller
             $sudahDimakan
         );
 
-        if (isset($hasilRekomendasi['error'])) {
-            return back()->withErrors(['gemini' => 'Maaf, Nothy gagal mencari makanan: ' . $hasilRekomendasi['error']]);
+      if (isset($hasilRekomendasi['error'])) {
+            $rawError = $hasilRekomendasi['error'];
+            $pesanUser = 'Maaf, terjadi kesalahan saat mencari rekomendasi.';
+
+            if ($rawError === 'api_gagal_koneksi') {
+                $pesanUser = 'Gagal terhubung ke AI. Periksa koneksi internet Anda.';
+            } elseif ($rawError === 'quota_exceeded') {
+                $pesanUser = 'Server AI sedang sibuk (Limit Habis). Mohon tunggu beberapa saat lagi.';
+            } elseif (str_contains(strtolower($rawError), 'json')) {
+                $pesanUser = 'AI memberikan data yang tidak valid. Silakan coba cari lagi.';
+            } else {
+                $pesanUser = 'Gagal memproses AI: ' . $rawError;
+            }
+
+            return back()->withErrors(['gemini' => $pesanUser]);
         }
 
-        // dd($hasilRekomendasi);
 
-        // 7. Kembalikan ke halaman yang sama dengan Data Baru
         return Inertia::render('Makanan/Rekomendasi', [
             'rekomendasi' => $hasilRekomendasi, 
             'sisaKebutuhan' => $sisaKebutuhan,  

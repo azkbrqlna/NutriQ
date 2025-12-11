@@ -1,4 +1,4 @@
-import { useState } from "react"; // 1. Import useState
+import { useState } from "react"; 
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import {
     LayoutDashboard,
@@ -6,8 +6,9 @@ import {
     Soup,
     ScanSearch,
     LogOut,
-    Menu, // 2. Import icon Menu (Hamburger)
-    X, // 3. Import icon X (Close)
+    Menu, 
+    X,
+    Carrot, 
 } from "lucide-react";
 import { Toaster } from "sonner";
 import AvocadoIcon from "./AvocadoIcon";
@@ -50,7 +51,7 @@ export default function AppLayout({ children }) {
                 <div className="md:hidden bg-[#E9EFDB] p-4 flex items-center justify-between border-b border-[#D5E1C3] sticky top-0 z-40">
                     <div className="flex items-center gap-2">
                         <div className="bg-[#7A9E7E] rounded-lg flex items-center justify-center w-8 h-8 text-white">
-                            <AvocadoIcon className="w-5 h-5" />
+                            <Carrot className="w-5 h-5" />
                         </div>
                         <span className="font-bold text-lg text-[#2C3A2C]">
                             NutriQ
@@ -92,7 +93,7 @@ export default function AppLayout({ children }) {
                         <div className="flex items-center justify-between mb-10 px-2">
                             <div className="flex items-center gap-3">
                                 <div className="bg-[#7A9E7E] rounded-lg flex items-center justify-center w-10 h-10 text-white">
-                                    <AvocadoIcon className="w-6 h-6" />
+                                    <Carrot className="w-6 h-6 " />
                                 </div>
                                 <span className="text-2xl font-bold tracking-tight text-[#2C3A2C]">
                                     NutriQ

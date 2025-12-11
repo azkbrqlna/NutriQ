@@ -44,4 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
     Route::post('/rekomendasi/generate', [RekomendasiController::class, 'generate'])->name('rekomendasi.generate');
+    Route::get('/rekomendasi/generate', function() {
+        return to_route('rekomendasi.index');
+    });
 });

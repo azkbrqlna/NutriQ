@@ -4,13 +4,13 @@ import {
     Search,
     Wallet,
     Utensils,
-    Flame, // Kalori
-    Beef, // Protein
-    Wheat, // Karbohidrat
-    Droplet, // Lemak
-    Leaf, // Serat
-    Waves, // Natrium (Garam)
-    Candy, // Gula
+    Flame,
+    Beef,
+    Wheat,
+    Droplet,
+    Leaf,
+    Waves,
+    Candy,
     ChefHat,
     Loader2,
     MapPin,
@@ -20,7 +20,13 @@ import AppLayout from "@/Components/AppLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 
+// Import Custom Hook Toast
+import useNotify from "@/Components/ToastNotification";
+
 export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
+    // 1. Panggil Hook Notify
+    const { notifyError } = useNotify();
+
     // Setup Form Inertia
     const { data, setData, post, processing } = useForm({
         budget: "",
@@ -28,16 +34,29 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
 
     const handleSearch = (e) => {
         e.preventDefault();
+
         post(route("rekomendasi.generate"), {
             preserveScroll: true,
             onSuccess: () => {
-                // Scroll ke hasil jika sukses
                 const element = document.getElementById("hasil-pencarian");
                 if (element) element.scrollIntoView({ behavior: "smooth" });
+            },
+            onError: (err) => {
+                if (err.budget) {
+                    notifyError("Budget Tidak Valid", err.budget);
+                } else if (err.gemini) {
+                    notifyError("Gagal Memuat Rekomendasi", err.gemini);
+                } else {
+                    notifyError(
+                        "Terjadi Kesalahan Sistem",
+                        "Mohon muat ulang halaman atau coba lagi beberapa saat lagi."
+                    );
+                }
             },
         });
     };
 
+    // Fungsi Format Rupiah
     const formatRupiah = (number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -49,6 +68,22 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
 
     return (
         <AppLayout>
+            {processing && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        zIndex: 999999,
+                        backgroundColor: "transparent",
+                        pointerEvents: "auto",
+                        touchAction: "none",
+                        cursor: "wait",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                />
+            )}
             <Head title="Rekomendasi Menu" />
 
             <div className="min-h-screen w-full bg-[#F7F9F0] pb-20">
@@ -74,14 +109,28 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                     className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5C6F5C]"
                                     size={18}
                                 />
+
+                                {/* --- INPUT BUDGET --- */}
                                 <Input
-                                    type="number"
+                                    type="text"
                                     placeholder="Masukkan Budget (Rp)"
-                                    className="pl-11 py-6 text-base border-transparent bg-[#F9FAEF] focus:bg-white focus:ring-2 focus:ring-[#7A9E7E] rounded-xl w-full text-[#2C3A2C] font-medium"
-                                    value={data.budget}
-                                    onChange={(e) =>
-                                        setData("budget", e.target.value)
+                                    className={`pl-11 py-6 text-base border-transparent bg-[#F9FAEF] focus:bg-white focus:ring-2 focus:ring-[#7A9E7E] rounded-xl w-full text-[#2C3A2C] font-medium transition-all ${
+                                        errors.budget
+                                            ? "ring-2 ring-red-200 bg-red-50"
+                                            : ""
+                                    }`}
+                                    value={
+                                        data.budget
+                                            ? formatRupiah(data.budget)
+                                            : ""
                                     }
+                                    onChange={(e) => {
+                                        const rawValue = e.target.value.replace(
+                                            /\D/g,
+                                            ""
+                                        );
+                                        setData("budget", rawValue);
+                                    }}
                                     disabled={processing}
                                 />
                             </div>
@@ -101,22 +150,16 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                             </Button>
                         </form>
 
-                        {/* Error Messages */}
+                        {/* Inline Error */}
                         {errors.budget && (
-                            <div className="text-red-500 text-sm mt-2 px-2 flex items-center gap-1 animate-in slide-in-from-top-1">
-                                <Info size={14} /> {errors.budget}
-                            </div>
-                        )}
-                        {errors.gemini && (
-                            <div className="text-red-500 text-sm mt-2 px-2 flex items-center gap-1 animate-in slide-in-from-top-1">
-                                <Info size={14} /> {errors.gemini}
+                            <div className="text-red-500 text-xs mt-2 px-2 flex items-center gap-1 animate-in slide-in-from-top-1 font-medium">
+                                <Info size={12} /> {errors.budget}
                             </div>
                         )}
                     </div>
 
                     {/* --- CONTENT AREA --- */}
                     <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-                        {/* STATE: LOADING */}
                         {processing && (
                             <div className="flex flex-col items-center justify-center py-16 text-center opacity-80">
                                 <div className="relative">
@@ -133,7 +176,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                             </div>
                         )}
 
-                        {/* STATE: EMPTY (BELUM CARI) */}
                         {!processing && !rekomendasi && (
                             <div className="text-center opacity-40 py-10 border-2 border-dashed border-[#D5E1C3] rounded-3xl mx-auto max-w-2xl bg-[#F9FAEF]/50">
                                 <Utensils
@@ -147,7 +189,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                             </div>
                         )}
 
-                        {/* STATE: RESULT */}
                         {!processing && rekomendasi && (
                             <div id="hasil-pencarian">
                                 {/* Summary Header */}
@@ -190,7 +231,7 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                             key={index}
                                             className="group bg-white rounded-2xl border border-[#D5E1C3] overflow-hidden hover:shadow-xl hover:shadow-[#4A624E]/10 transition-all duration-300 flex flex-col h-full relative"
                                         >
-                                            {/* Label Harga Melayang */}
+                                            {/* Label Harga */}
                                             <div className="absolute top-4 right-4 z-10">
                                                 <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm font-bold text-[#4A624E] shadow-sm border border-[#D5E1C3]">
                                                     {formatRupiah(
@@ -209,9 +250,8 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                 </p>
                                             </div>
 
-                                            {/* Body: Nutrisi Lengkap (7 Indikator) */}
+                                            {/* Body: Nutrisi */}
                                             <div className="px-6 py-2 flex-1">
-                                                {/* Baris 1: Macro Utama (Kalori & Protein) */}
                                                 <div className="flex gap-3 mb-4">
                                                     <div className="flex-1 flex items-center gap-2 bg-orange-50 text-orange-700 px-3 py-2.5 rounded-xl text-sm font-bold border border-orange-100 shadow-sm">
                                                         <Flame
@@ -237,9 +277,8 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                     </div>
                                                 </div>
 
-                                                {/* Baris 2: Grid Micro Nutrients */}
+                                                {/* Micro Nutrients Grid */}
                                                 <div className="grid grid-cols-3 gap-2 mb-4">
-                                                    {/* Karbo */}
                                                     <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-yellow-50 border border-yellow-100 text-yellow-800">
                                                         <Wheat
                                                             size={14}
@@ -257,7 +296,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                             Karbo
                                                         </span>
                                                     </div>
-                                                    {/* Lemak */}
                                                     <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-rose-50 border border-rose-100 text-rose-800">
                                                         <Droplet
                                                             size={14}
@@ -275,7 +313,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                             Lemak
                                                         </span>
                                                     </div>
-                                                    {/* Serat */}
                                                     <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-green-50 border border-green-100 text-green-800">
                                                         <Leaf
                                                             size={14}
@@ -293,7 +330,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                             Serat
                                                         </span>
                                                     </div>
-                                                    {/* Gula */}
                                                     <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-pink-50 border border-pink-100 text-pink-800">
                                                         <Candy
                                                             size={14}
@@ -311,7 +347,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                             Gula
                                                         </span>
                                                     </div>
-                                                    {/* Natrium */}
                                                     <div className="col-span-2 flex items-center justify-center gap-2 p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600">
                                                         <Waves
                                                             size={14}
@@ -334,7 +369,7 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                 </div>
                                             </div>
 
-                                            {/* Footer: Maps Button */}
+                                            {/* Footer: Maps */}
                                             <div className="p-4 pt-0 mt-auto">
                                                 <a
                                                     href={item.maps_url}
@@ -349,7 +384,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                         </div>
                                     ))}
                                 </div>
-
                                 <div className="mt-8 text-center">
                                     <p className="text-xs text-[#5C6F5C]/60">
                                         *Data nutrisi adalah estimasi AI

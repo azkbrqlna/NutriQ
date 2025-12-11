@@ -19,35 +19,45 @@ class GeminiService
     }
 
     private function requestWithFallback($body)
-    {
-        foreach ($this->keys as $key) {
-            if (!$key) {
-                continue;
-            }
+{
+    $lastError = null;
 
-            $url = $this->model . "?key={$key}";
+    foreach ($this->keys as $index => $key) {
+        if (!$key) {
+            continue;
+        }
 
-            try {
-                $response = Http::withHeaders([
+        $url = $this->model . "?key={$key}";
+
+        try {
+            $response = Http::withOptions(['verify' => false])
+                ->withHeaders([
                     "Content-Type" => "application/json",
                 ])->post($url, $body);
 
-                if ($response->successful()) {
-                    return $response;
-                }
+            if ($response->successful()) {
+                return ['success' => true, 'data' => $response];
+            }
 
-                // Jika rate limit / quota abis / error 429, otomatis lanjut ke key berikutnya
-                if ($response->status() == 429 || $response->status() == 403) {
-                    continue;
-                }
 
-            } catch (\Exception $e) {
+            if ($response->status() == 429 || $response->status() >= 500) {
+                $lastError = "Google Error: " . $response->status();
                 continue;
             }
-        }
 
-        return null;
+            if ($response->status() == 400) {
+                return ['success' => false, 'error' => 'request_tidak_valid_400'];
+            }
+
+        } catch (\Exception $e) {
+            $lastError = $e->getMessage();
+            continue;
+        }
     }
+
+    return ['success' => false, 'error' => $lastError ?? 'api_gagal_koneksi_semua_key'];
+}
+
 
     public function hitungKebutuhan($user)
     {
@@ -283,117 +293,118 @@ class GeminiService
     }
 
     public function rekomendasiMakanan($budget, $kebutuhan, $sudahDimakan)
-    {
-        $sisaKalori = max(0, $kebutuhan->kalori - ($sudahDimakan->kalori ?? 0));
-        $sisaProtein = max(0, $kebutuhan->protein - ($sudahDimakan->protein ?? 0));
-        $sisaLemak = max(0, $kebutuhan->lemak - ($sudahDimakan->lemak ?? 0));
-        $sisaKarbo = max(0, $kebutuhan->karbohidrat - ($sudahDimakan->karbohidrat ?? 0));
-        $sisaSerat = max(0, $kebutuhan->serat - ($sudahDimakan->serat ?? 0));
-        $sisaNatrium = max(0, $kebutuhan->natrium - ($sudahDimakan->natrium ?? 0));
-        $sisaGula = max(0, $kebutuhan->gula_tambahan - ($sudahDimakan->gula_tambahan ?? 0));
+{
+    $sisaKalori = max(0, $kebutuhan->kalori - ($sudahDimakan->kalori ?? 0));
+    $sisaProtein = max(0, $kebutuhan->protein - ($sudahDimakan->protein ?? 0));
+    $sisaLemak = max(0, $kebutuhan->lemak - ($sudahDimakan->lemak ?? 0));
+    $sisaKarbo = max(0, $kebutuhan->karbohidrat - ($sudahDimakan->karbohidrat ?? 0));
+    $sisaSerat = max(0, $kebutuhan->serat - ($sudahDimakan->serat ?? 0));
+    $sisaNatrium = max(0, $kebutuhan->natrium - ($sudahDimakan->natrium ?? 0));
+    $sisaGula = max(0, $kebutuhan->gula_tambahan - ($sudahDimakan->gula_tambahan ?? 0));
 
-        $sisaKalori = number_format($sisaKalori, 0, '', '');
-        $sisaProtein = number_format($sisaProtein, 0, '', '');
-        $sisaLemak = number_format($sisaLemak, 0, '', '');
-        $sisaKarbo = number_format($sisaKarbo, 0, '', '');
-        $sisaSerat = number_format($sisaSerat, 0, '', '');
-        $sisaNatrium = number_format($sisaNatrium, 0, '', '');
-        $sisaGula = number_format($sisaGula, 0, '', '');
+    $sisaKalori = number_format($sisaKalori, 0, '', '');
+    $sisaProtein = number_format($sisaProtein, 0, '', '');
+    $sisaLemak = number_format($sisaLemak, 0, '', '');
+    $sisaKarbo = number_format($sisaKarbo, 0, '', '');
+    $sisaSerat = number_format($sisaSerat, 0, '', '');
+    $sisaNatrium = number_format($sisaNatrium, 0, '', '');
+    $sisaGula = number_format($sisaGula, 0, '', '');
+
+    $prompt = "
+        Bertindaklah sebagai Ahli Gizi dan Pencari Kuliner Lokal Indonesia.
+        TUGAS: Berikan 4 opsi rekomendasi MENU MAKANAN (Meal) yang bisa dibeli di warung/restoran/pedagang kaki lima.
         
-        $prompt = "
-            Bertindaklah sebagai Ahli Gizi dan Pencari Kuliner Lokal Indonesia.
-            
-            TUGAS:
-            Berikan 4 opsi rekomendasi MENU MAKANAN (Meal) yang bisa dibeli di warung/restoran/pedagang kaki lima.
-            
-            CONSTRAINT (BATASAN MUTLAK):
-            1. BUDGET: Maksimal Rp {$budget} per porsi.
-            2. JENIS: HANYA MAKANAN PADAT (Lauk/Nasi/Sayur).
-            
-            KONDISI USER (KEKURANGAN NUTRISI SAAT INI):
-            User membutuhkan asupan berikut untuk mencapai target harian:
-            - Kalori: {$sisaKalori} kkal
-            - Protein: {$sisaProtein} gram
-            - Lemak: {$sisaLemak} gram
-            - Karbohidrat: {$sisaKarbo} gram
-            - Serat: {$sisaSerat} gram
-            - Natrium: {$sisaNatrium} mg
-            - Gula Tambahan: {$sisaGula} gram
+        CONSTRAINT:
+        1. BUDGET: Maksimal Rp {$budget} per porsi.
+        2. JENIS: HANYA MAKANAN PADAT.
+        
+        KEKURANGAN NUTRISI USER:
+        - Kalori: {$sisaKalori} kkal
+        - Protein: {$sisaProtein} g
+        - Lemak: {$sisaLemak} g
+        - Karbo: {$sisaKarbo} g
+        - Serat: {$sisaSerat} g
+        
+        FORMAT OUTPUT (JSON ARRAY):
+        [
+            {
+                \"nama_menu\": \"...\",
+                \"estimasi_harga\": 10000,
+                \"alasan_rekomendasi\": \"...\",
+                \"kandungan_gizi\": {
+                    \"kalori\": 0, \"protein\": 0, \"lemak\": 0,
+                    \"karbohidrat\": 0, \"serat\": 0,
+                    \"natrium\": 0, \"gula_tambahan\": 0
+                },
+                \"keyword_pencarian\": \"...\"
+            }
+        ]
+    ";
 
-            INSTRUKSI:
-            - Jika kekurangan Serat tinggi, sarankan menu sayuran (Gado-gado, Pecel, Capcay).
-            - Jika kekurangan Protein tinggi, sarankan lauk hewani/nabati (Ayam, Telur, Tempe).
-            - Usahakan rekomendasi menyeimbangkan kekurangan nutrisi di atas.
-            
-            FORMAT OUTPUT: Wajib return HANYA JSON valid sesuai struktur berikut (tanpa markdown ```json):
-            [
-                {
-                    \"nama_menu\": \"Nama Makanan Lengkap\",
-                    \"estimasi_harga\": 15000,
-                    \"alasan_rekomendasi\": \"Jelaskan kecocokan dengan sisa nutrisi (misal: Tinggi serat untuk menutup kekurangan serat)\",
-                    \"kandungan_gizi\": {
-                        \"kalori\": (int),
-                        \"protein\": (int),
-                        \"lemak\": (int),
-                        \"karbohidrat\": (int),
-                        \"serat\": (int),
-                        \"natrium\": (int),
-                        \"gula_tambahan\": (int)
-                    },
-                    \"keyword_pencarian\": \"Keyword spesifik untuk Maps\"
-                }
-            ]
-        ";
+    $body = [
+        "contents" => [
+            ["parts" => [["text" => $prompt]]]
+        ],
+        "generationConfig" => [
+            "temperature" => 0.4,
+            "topK" => 32,
+            "topP" => 1,
+            "maxOutputTokens" => 8192,
+        ]
+    ];
 
-        $body = [
-            "contents" => [
-                ["parts" => [["text" => $prompt]]]
-            ],
-            "safetySettings" => [
-                ["category" => "HARM_CATEGORY_HARASSMENT", "threshold" => "BLOCK_NONE"],
-                ["category" => "HARM_CATEGORY_HATE_SPEECH", "threshold" => "BLOCK_NONE"],
-                ["category" => "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold" => "BLOCK_NONE"],
-                ["category" => "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold" => "BLOCK_NONE"],
-            ],
-            "generationConfig" => [
-                "temperature" => 0.4,
-                "topK" => 32,
-                "topP" => 1,
-                "maxOutputTokens" => 8192, 
-            ]
+    $result = $this->requestWithFallback($body);
+
+    if (!$result['success']) {
+        return [
+            'error' => 'Maaf, kami sedang mengalami kendala. Coba lagi beberapa saat lagi ya.'
         ];
-
-        $response = $this->requestWithFallback($body);
-
-        if (!$response) return ['error' => 'api_gagal_koneksi'];
-
-        $data = $response->json();
-        
-        if (isset($data['promptFeedback']['blockReason'])) {
-            return ['error' => 'blokir_safety: ' . $data['promptFeedback']['blockReason']];
-        }
-
-        $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-        if (!$text) return ['error' => 'respon_kosong_dari_ai'];
-
-        $text = preg_replace('/^```json\s*|\s*```$/', '', $text);
-        preg_match('/\[(?:[^\[\]]|(?R))*\]/s', $text, $match);
-        
-        if (!isset($match[0])) return ['error' => 'format_json_rusak'];
-        
-        $rekomendasi = json_decode($match[0], true);
-
-        if (!$rekomendasi) return ['error' => 'gagal_parse_json'];
-
-        foreach ($rekomendasi as &$item) {  
-            $keyword = $item['keyword_pencarian'] . " terdekat";
-            $query = urlencode($keyword);
-            
-            $item['maps_url'] = "https://www.google.com/maps/search/{$query}";
-        }
-
-        return $rekomendasi;
     }
+
+    $response = $result['data'];
+    $data = $response->json();
+
+    if (isset($data['promptFeedback']['blockReason'])) {
+        return [
+            'error' => 'Permintaan tidak bisa diproses karena melanggar aturan keamanan. Silakan ubah pertanyaanmu.'
+        ];
+    }
+
+    $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+    if (!$text) {
+        return [
+            'error' => 'Kami tidak menerima respon dari sistem. Silakan coba lagi.'
+        ];
+    }
+
+    $text = preg_replace('/^```json\s*|\s*```$/', '', $text);
+
+    preg_match('/\[(?:[^\[\]]|(?R))*\]/s', $text, $match);
+
+    if (!isset($match[0])) {
+        return [
+            'error' => 'Data yang diterima tidak lengkap. Mohon coba ulang.'
+        ];
+    }
+
+    $rekomendasi = json_decode($match[0], true);
+
+    if (!$rekomendasi) {
+        return [
+            'error' => 'Format data tidak dapat dibaca. Silakan coba lagi.'
+        ];
+    }
+
+    foreach ($rekomendasi as &$item) {
+        $keyword = ($item['keyword_pencarian'] ?? $item['nama_menu']) . " terdekat";
+        $query = urlencode($keyword);
+
+        $item['maps_url'] = "https://www.google.com/maps/search/?api=1&query={$query}";
+    }
+
+    return $rekomendasi;
+}
+
     
 }
