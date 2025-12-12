@@ -9,6 +9,7 @@ import {
     ChevronRight,
     Wallet,
     ChefHat,
+    Carrot,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -89,9 +90,9 @@ export default function Landing() {
             >
                 <div className="backdrop-blur-xl bg-white/60 border-b border-[#D5E1C3]/50 shadow-sm">
                     <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-4">
                             <div className="bg-[#E9EFDB] p-2 rounded-lg text-[#4A624E]">
-                                <Brain className="w-6 h-6" />
+                                <Carrot className="w-7 h-7" />
                             </div>
                             <span className="font-bold text-xl text-[#4A624E]">
                                 Nutri<span className="text-[#2C3A2C]">Q</span>

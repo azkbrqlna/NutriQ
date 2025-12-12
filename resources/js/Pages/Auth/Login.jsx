@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { router, useForm } from "@inertiajs/react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Carrot } from "lucide-react";
 import { Spinner } from "@/Components/ui/spinner";
 import Alert from "@/Components/Alert";
 import Title from "@/Components/Title";
@@ -44,10 +44,14 @@ export default function Login() {
     return (
         <div className="min-h-screen flex flex-col justify-center items-center gap-[1.5rem] bg-[#F7F9F0] text-[#2C3A2C] font-sans p-4">
             <div className="logo text-center">
-                <Title
-                    text="NutriQ"
-                    className="text-[#2C3A2C] text-4xl font-bold tracking-tight"
-                />
+                <div className="flex items-center justify-center gap-3">
+                    <div className="bg-[#E9EFDB] p-3 rounded-xl text-[#4A624E]">
+                        <Carrot className="w-8 h-8" />
+                    </div>
+                    <span className="font-bold text-3xl text-[#4A624E]">
+                        Nutri<span className="text-[#2C3A2C]">Q</span>
+                    </span>
+                </div>
                 <p className="text-lg text-[#5C6F5C] mt-2">
                     Lanjutkan perjalanan sehat Anda!
                 </p>
