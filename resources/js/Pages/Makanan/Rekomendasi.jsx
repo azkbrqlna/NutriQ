@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import {
     Search,
@@ -20,41 +20,80 @@ import AppLayout from "@/Components/AppLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 
-// Import Custom Hook Toast
-import useNotify from "@/Components/ToastNotification";
+// Import Komponen Alert
+import Alert from "@/Components/Alert";
 
-export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
-    // 1. Panggil Hook Notify
-    const { notifyError } = useNotify();
+// Hapus import useNotify karena kita akan menggunakan Alert
+
+export default function Rekomendasi({
+    rekomendasi,
+    sisaKebutuhan,
+    errors: initialErrors,
+}) {
+    // 1. Definisikan state untuk alert, diinisialisasi dari errors Inertia
+    const [alert, setAlert] = useState(
+        initialErrors.budget || initialErrors.gemini
+            ? {
+                  variant: "destructive",
+                  title: "Gagal Memuat Rekomendasi",
+                  message: initialErrors.budget || initialErrors.gemini,
+              }
+            : null
+    );
 
     // Setup Form Inertia
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         budget: "",
     });
 
     const handleSearch = (e) => {
         e.preventDefault();
 
+        // Bersihkan alert sebelum melakukan POST baru
+        setAlert(null);
+
         post(route("rekomendasi.generate"), {
             preserveScroll: true,
             onSuccess: () => {
+                // Scroll ke hasil pencarian
                 const element = document.getElementById("hasil-pencarian");
                 if (element) element.scrollIntoView({ behavior: "smooth" });
             },
             onError: (err) => {
+                // 2. Ganti Toast dengan setting state Alert
                 if (err.budget) {
-                    notifyError("Budget Tidak Valid", err.budget);
+                    setAlert({
+                        variant: "warning", // Gunakan warning untuk validasi input
+                        title: "Budget Tidak Valid",
+                        message: err.budget,
+                    });
                 } else if (err.gemini) {
-                    notifyError("Gagal Memuat Rekomendasi", err.gemini);
+                    setAlert({
+                        variant: "destructive",
+                        title: "Gagal Memuat Rekomendasi",
+                        message: err.gemini,
+                    });
                 } else {
-                    notifyError(
-                        "Terjadi Kesalahan Sistem",
-                        "Mohon muat ulang halaman atau coba lagi beberapa saat lagi."
-                    );
+                    setAlert({
+                        variant: "destructive",
+                        title: "Terjadi Kesalahan Sistem",
+                        message:
+                            "Mohon muat ulang halaman atau coba lagi beberapa saat lagi.",
+                    });
                 }
             },
         });
     };
+
+    // FUNGSI PERBAIKAN: Menghapus alert secara otomatis menggunakan useEffect dengan dependensi [alert]
+    useEffect(() => {
+        if (alert) {
+            const timer = setTimeout(() => {
+                setAlert(null);
+            }, 5000); // Durasi diubah menjadi 5 detik (1500ms terlalu cepat)
+            return () => clearTimeout(timer);
+        }
+    }, [alert]); // Perbaikan: Pastikan ini bergantung pada state alert
 
     // Fungsi Format Rupiah
     const formatRupiah = (number) => {
@@ -86,6 +125,15 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
             )}
             <Head title="Rekomendasi Menu" />
 
+            {/* PERBAIKAN 2: Tampilkan Alert dengan posisi Fixed di atas tengah */}
+            {alert && (
+                <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-[250px] animate-in fade-in slide-in-from-top-1">
+                    <Alert variant={alert.variant} title={alert.title}>
+                        {alert.message}
+                    </Alert>
+                </div>
+            )}
+
             <div className="min-h-screen w-full bg-[#F7F9F0] pb-20">
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     {/* --- HEADER SECTION --- */}
@@ -102,6 +150,7 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                     </div>
 
                     {/* --- SEARCH BAR --- */}
+                    {/* Hapus margin-bottom (mb-12) atau sesuaikan jika perlu lebih banyak jarak dari fixed alert di atas */}
                     <div className="max-w-lg mx-auto bg-white p-3 rounded-2xl shadow-xl shadow-[#4A624E]/5 border border-[#D5E1C3] mb-12 relative z-10">
                         <form onSubmit={handleSearch} className="flex gap-2">
                             <div className="relative flex-1">
@@ -114,8 +163,10 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                 <Input
                                     type="text"
                                     placeholder="Masukkan Budget (Rp)"
+                                    // Hilangkan class error inline, gunakan state errors Inertia
                                     className={`pl-11 py-6 text-base border-transparent bg-[#F9FAEF] focus:bg-white focus:ring-2 focus:ring-[#7A9E7E] rounded-xl w-full text-[#2C3A2C] font-medium transition-all ${
-                                        errors.budget
+                                        errors.budget ||
+                                        (alert && alert.variant === "warning")
                                             ? "ring-2 ring-red-200 bg-red-50"
                                             : ""
                                     }`}
@@ -149,13 +200,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                 )}
                             </Button>
                         </form>
-
-                        {/* Inline Error */}
-                        {errors.budget && (
-                            <div className="text-red-500 text-xs mt-2 px-2 flex items-center gap-1 animate-in slide-in-from-top-1 font-medium">
-                                <Info size={12} /> {errors.budget}
-                            </div>
-                        )}
                     </div>
 
                     {/* --- CONTENT AREA --- */}
@@ -328,23 +372,6 @@ export default function Rekomendasi({ rekomendasi, sisaKebutuhan, errors }) {
                                                         </span>
                                                         <span className="text-[10px] opacity-60">
                                                             Serat
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-pink-50 border border-pink-100 text-pink-800">
-                                                        <Candy
-                                                            size={14}
-                                                            className="mb-1 opacity-70"
-                                                        />
-                                                        <span className="text-xs font-semibold">
-                                                            {
-                                                                item
-                                                                    .kandungan_gizi
-                                                                    .gula_tambahan
-                                                            }
-                                                            g
-                                                        </span>
-                                                        <span className="text-[10px] opacity-60">
-                                                            Gula
                                                         </span>
                                                     </div>
                                                     <div className="col-span-2 flex items-center justify-center gap-2 p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600">

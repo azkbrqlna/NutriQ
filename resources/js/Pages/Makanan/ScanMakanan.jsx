@@ -1,7 +1,7 @@
 import { DatePickerDropdown } from "@/Components/ui/date-picker-dropdown";
 import { TimePickerDropdown } from "@/Components/ui/time-picker-dropdown";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import {
     Calendar,
@@ -15,13 +15,43 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import AppLayout from "@/Components/AppLayout";
-import useNotify from "@/Components/ToastNotification";
 
-export default function ScanMakanan() {
+// Import komponen Alert
+import Alert from "@/Components/Alert";
+
+export default function ScanMakanan({ flash }) {
     const [preview, setPreview] = useState(null);
     const [dragActive, setDragActive] = useState(false);
 
-    const { notifySuccess, notifyError } = useNotify();
+    // 1. Definisikan state untuk alert, inisialisasi dari flash success/error
+    const [alert, setAlert] = useState(null);
+
+    // Efek untuk menangani flash message dari Inertia (hanya berjalan saat mount)
+    useEffect(() => {
+        if (flash && flash.success) {
+            setAlert({
+                variant: "success",
+                title: "Berhasil!",
+                message: flash.success,
+            });
+        } else if (flash && flash.error) {
+            setAlert({
+                variant: "destructive",
+                title: "Gagal",
+                message: flash.error,
+            });
+        }
+    }, []); // Dependensi kosong, hanya berjalan sekali saat mount
+
+    // Efek untuk mengatur Timeout Alert
+    useEffect(() => {
+        if (alert) {
+            const timer = setTimeout(() => {
+                setAlert(null);
+            }, 1500); // Durasi timeout yang lebih wajar (5 detik)
+            return () => clearTimeout(timer);
+        }
+    }, [alert]); // <-- Perubahan: Dependensi diubah ke [alert]
 
     const { data, setData, post, processing } = useForm({
         tanggal: "",
@@ -29,8 +59,14 @@ export default function ScanMakanan() {
         image: null,
     });
 
+    // 3. Modifikasi triggerError untuk menggunakan setAlert
     const triggerError = (msg) => {
-        notifyError("Gagal", msg);
+        setAlert(null); // Bersihkan alert sebelumnya
+        setAlert({
+            variant: "warning",
+            title: "Peringatan Upload",
+            message: msg,
+        });
     };
 
     const processFile = (file) => {
@@ -41,6 +77,8 @@ export default function ScanMakanan() {
             return;
         }
 
+        // Bersihkan alert lama jika ada
+        setAlert(null);
         setData("image", file);
         setPreview(URL.createObjectURL(file));
     };
@@ -70,27 +108,54 @@ export default function ScanMakanan() {
     const submit = (e) => {
         e.preventDefault();
 
+        // Bersihkan alert sebelum submit
+        setAlert(null);
+
         post(route("scan.generate"), {
             forceFormData: true,
             onError: (errors) => {
-                if (errors.image) notifyError("Upload Gagal", errors.image);
-                if (errors.tanggal)
-                    notifyError("Tanggal Salah", errors.tanggal);
-                if (errors.jam) notifyError("Jam Salah", errors.jam);
-                if (errors.error) notifyError("Analisis Gagal", errors.error);
-            },
-            onSuccess: () => {
-                notifySuccess("Berhasil!", "Gambar berhasil dianalisis 🎉");
+                // 4. Ganti semua notifyError dengan setAlert
+                let errorTitle = "Gagal";
+                let errorMessage = "Terjadi kesalahan yang tidak terduga.";
+                let variant = "destructive";
+
+                if (errors.image) {
+                    errorTitle = "Upload Gagal";
+                    errorMessage = errors.image;
+                    variant = "warning";
+                } else if (errors.tanggal) {
+                    errorTitle = "Tanggal Salah";
+                    errorMessage = errors.tanggal;
+                    variant = "warning";
+                } else if (errors.jam) {
+                    errorTitle = "Jam Salah";
+                    errorMessage = errors.jam;
+                    variant = "warning";
+                } else if (errors.error) {
+                    errorTitle = "Analisis Gagal";
+                    errorMessage = errors.error;
+                }
+
+                setAlert({ variant, title: errorTitle, message: errorMessage });
             },
         });
     };
 
     return (
         <AppLayout>
-            <div className="w-full min-h-screen bg-[#F7F9F0]">
+            <div className="w-full min-h-screen bg-[#F7F9F0] relative">
                 <Head title="Scan Makanan" />
 
-                <div className="max-w-4xl mx-auto w-full pt-6">
+                {/* 2. Tampilkan Alert dengan posisi Fixed di atas tengah */}
+                {alert && (
+                    <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-[250px] animate-in fade-in slide-in-from-top-1">
+                        <Alert variant={alert.variant} title={alert.title}>
+                            {alert.message}
+                        </Alert>
+                    </div>
+                )}
+
+                <div className="max-w-4xl mx-auto w-full pt-6 px-4">
                     {/* Header Text */}
                     <div className="mb-8">
                         <h1 className="md:text-4xl text-3xl font-bold text-[#2C3A2C] tracking-tight">
