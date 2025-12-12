@@ -109,9 +109,6 @@ export default function Dashboard() {
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="bg-[#E9EFDB] p-2 rounded-lg text-[#7A9E7E]">
-                                <LayoutDashboard size={24} />
-                            </div>
                             <h1 className="text-3xl font-bold text-[#2C3A2C] tracking-tight">
                                 Dashboard
                             </h1>
