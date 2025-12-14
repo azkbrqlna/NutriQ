@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserIsNotPersonalized
+class EnsureUserIsPersonalized
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -19,12 +19,12 @@ class EnsureUserIsNotPersonalized
 
         $sudah = KebutuhanHarian::where('user_id', $user->id)->exists();
 
-        // JIKA SUDAH personalisasi, arahkan ke dashboard. Jangan biarkan di sini.
-        if ($sudah) {
-            return redirect()->route('dashboard');
+        // JIKA BELUM personalisasi, arahkan ke halaman personalisasi.
+        if (!$sudah) {
+            return redirect()->route('personalisasi');
         }
 
-        // JIKA BELUM personalisasi, izinkan akses ke rute (personalisasi).
+        // JIKA SUDAH personalisasi, izinkan akses ke rute yang dilindungi (profil, scan, dll).
         return $next($request);
     }
 }
