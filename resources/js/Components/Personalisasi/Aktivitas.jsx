@@ -9,7 +9,6 @@ import {
 import Title from "../Title";
 import SelectBox from "../SelectBox";
 
-
 export default function Aktivitas({ setData, data }) {
     const [selectedAktivitas, setSelectedAktivitas] = useState(
         data.aktivitas || null
@@ -49,7 +48,7 @@ export default function Aktivitas({ setData, data }) {
     ];
 
     return (
-        <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+        <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500 md:mt-0 mt-[25rem]">
             {/* Icon Visual */}
 
             <Title

@@ -90,7 +90,7 @@ export default function Personalisasi() {
 
             {processing ? (
                 <Analisis />
-            ) : ( 
+            ) : (
                 <div className="h-screen flex flex-col justify-between py-10 relative z-10 animate-in fade-in duration-500">
                     {/* Header: Progress Bar */}
                     <div className="w-full max-w-xl mx-auto px-6 pt-6">
@@ -110,7 +110,7 @@ export default function Personalisasi() {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col justify-center items-center w-full max-w-4xl mx-auto px-4">
+                    <div className="flex-1 overflow-y-auto flex flex-col justify-center items-center w-full max-w-4xl mx-auto px-4 pt-8 pb-8">
                         <CurrentQuestion setData={setData} data={data} />
                     </div>
 
@@ -187,5 +187,5 @@ export default function Personalisasi() {
                 </div>
             )}
         </div>
-    );  
+    );
 }
