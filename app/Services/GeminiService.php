@@ -425,7 +425,7 @@ class GeminiService
             $query = urlencode($keyword);
 
             // KOREKSI: Mengganti URL Google Maps placeholder ke format standar yang lebih bersih
-            $item['maps_url'] = "[https://www.google.com/maps/search/?api=1&query=](https://www.google.com/maps/search/?api=1&query=){$query}";
+            $item['maps_url'] = "https://www.google.com/maps/search/{$query}";
         }
         unset($item); // Penting: putuskan referensi $item
 
