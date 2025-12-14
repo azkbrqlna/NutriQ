@@ -8,8 +8,8 @@ import { Label } from "@/Components/ui/label";
 import { Input } from "@/Components/ui/input";
 
 export default function Register() {
-    const [isNotFilled, setIsNotFilled] = useState(false);
     const [hidePassword, setHidePassword] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         name: "",
@@ -21,12 +21,12 @@ export default function Register() {
         e.preventDefault();
 
         if (!data.name || !data.email || !data.password) {
-            setIsNotFilled(true);
+            setShowAlert("Harap isi semua data");
             return;
         }
 
         if (data.password.length < 8) {
-            alert("Password minimal 8 karakter!");
+            setShowAlert("Password harus lebih dari 8 kata");
             return;
         }
 
@@ -34,13 +34,13 @@ export default function Register() {
     };
 
     useEffect(() => {
-        if (isNotFilled) {
+        if (showAlert) {
             const timer = setTimeout(() => {
-                setIsNotFilled(false);
+                setShowAlert("");
             }, 1500);
             return () => clearTimeout(timer);
         }
-    }, [isNotFilled]);
+    }, [showAlert]);
 
     // --- STYLE CLASSES (Konsisten dengan Login) ---
     const inputWrapperClass =
@@ -175,17 +175,11 @@ export default function Register() {
             </div>
 
             {/* Global Alerts */}
-            {isNotFilled && (
+            {showAlert && (
                 <div className="fixed top-10 z-50">
-                    <Alert variant="warning" title="Harap isi semua field!" />
+                    <Alert variant="warning" title={showAlert} />
                 </div>
             )}
-
-            {/* {errors.error && (
-                <div className="fixed top-24 z-50">
-                    <Alert variant="error" msg={errors.error} />
-                </div>
-            )} */}
         </div>
     );
 }

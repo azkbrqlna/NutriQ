@@ -20,31 +20,32 @@ Route::middleware("guest")->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware(['not.personalized'])->group(function () {
+    Route::middleware('isNotPersonalized')->group(function () {
         Route::get('/personalisasi', [UserController::class, 'index'])->name('personalisasi');
         Route::post('/personalisasi', [UserController::class, 'store'])->name('personalisasi.store');
     });
 
-    Route::get('/profil', [UserController::class, 'show_profil']);
-    Route::patch('/profile', [UserController::class, 'update'])->name('profil.update');
+    Route::middleware('isPersonalized')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [UserController::class, 'show_profil']);
+        Route::patch('/profile', [UserController::class, 'update'])->name('profil.update');
 
-    Route::get('/scan-makanan', [MakananController::class, 'index'])->name('scan.index');
-    Route::post('/scan-makanan/generate', [MakananController::class, 'generate_makanan'])->name('scan.generate');
-    // Route::get('/rekomendasi', [MakananController::class, 'show_rekomendasi']);
+        Route::get('/scan-makanan', [MakananController::class, 'index'])->name('scan.index');
+        Route::post('/scan-makanan/generate', [MakananController::class, 'generate_makanan'])->name('scan.generate');
+        // Route::get('/rekomendasi', [MakananController::class, 'show_rekomendasi']);
 
 
-    Route::get('/riwayat', [MakananController::class, 'riwayat'])->name('riwayat.index');
-    Route::get('/riwayat/{slug}', [MakananController::class, 'show'])->name('riwayat.show');
+        Route::get('/riwayat', [MakananController::class, 'riwayat'])->name('riwayat.index');
+        Route::get('/riwayat/{slug}', [MakananController::class, 'show'])->name('riwayat.show');
 
-    Route::get('/rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
-    Route::post('/rekomendasi/generate', [RekomendasiController::class, 'generate'])->name('rekomendasi.generate');
-    Route::get('/rekomendasi/generate', function() {
-        return to_route('rekomendasi.index');
+        Route::get('/rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
+        Route::post('/rekomendasi/generate', [RekomendasiController::class, 'generate'])->name('rekomendasi.generate');
+        Route::get('/rekomendasi/generate', function () {
+            return to_route('rekomendasi.index');
+        });
     });
 });
