@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/index.php",
+            "use": "@vercel/php"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(build|assets|images|css|js|favicon\\.ico|robots\\.txt)/.*",
+            "dest": "/public/$1",
+            "continue": true
+        },
+        {
+            "src": "/storage/(.*)",
+            "dest": "/public/storage/$1",
+            "continue": true
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
+    ],
+    "outputDirectory": "public"
+}
